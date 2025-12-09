@@ -1713,3 +1713,417 @@ body.catalog-page .catalog-wrapper {
         opacity: 0;
     }
 }
+
+/* ===========================
+   RESPONSIVIDADE MOBILE COMPLETA
+   =========================== */
+
+/* Tablets e telas médias */
+@media (max-width: 992px) {
+    html, body {
+        padding-top: 60px;
+    }
+    
+    .logo img {
+        max-width: 250px;
+        margin-right: 20px;
+    }
+    
+    .hero h2 {
+        font-size: 28px !important;
+    }
+    
+    .categoria h2 {
+        font-size: 28px;
+    }
+    
+    .categoria p {
+        font-size: 22px;
+    }
+    
+    .catalog-wrapper {
+        flex-direction: column;
+    }
+    
+    .catalog-sidebar {
+        width: 100%;
+        position: relative;
+        top: 0;
+    }
+    
+    .catalog-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .category-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Mobile - Smartphones */
+@media (max-width: 600px) {
+    html, body {
+        padding-top: 55px;
+    }
+    
+    /* Header mobile */
+    header {
+        padding: 5px 10px;
+    }
+    
+    header .container_top {
+        padding: 10px 10px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    nav ul {
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    nav ul li a {
+        padding: 0.5em 1em;
+        font-size: 14px;
+    }
+    
+    /* Logo mobile */
+    .logo img {
+        max-width: 180px;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    /* Hero mobile */
+    .hero {
+        flex-direction: column;
+        padding: 15px;
+    }
+    
+    .hero h2 {
+        font-size: 22px !important;
+    }
+    
+    .hero p {
+        font-size: 14px;
+    }
+    
+    .text {
+        margin-left: 0;
+        margin-top: 20px;
+        padding: 15px;
+    }
+    
+    /* Hero catálogo mobile */
+    .hero_catalogo {
+        flex-direction: column;
+        padding: 20px 15px;
+        gap: 15px;
+    }
+    
+    .hero_catalogo .logo img {
+        max-width: 200px;
+    }
+    
+    .text_catalogo h2 {
+        font-size: 20px;
+    }
+    
+    .text_catalogo p {
+        font-size: 14px;
+    }
+    
+    /* Cards mobile */
+    .cards {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .card h3 {
+        font-size: 18px;
+    }
+    
+    /* Category slides mobile */
+    .category-slides {
+        padding: 15px;
+        gap: 20px;
+    }
+    
+    .category-slide {
+        border-radius: 12px;
+    }
+    
+    .slide-image {
+        height: 180px;
+    }
+    
+    .slide-image img {
+        max-height: 140px;
+    }
+    
+    .slide-content {
+        padding: 20px;
+    }
+    
+    .slide-content h3 {
+        font-size: 1.3rem;
+    }
+    
+    .slide-content p {
+        font-size: 0.9rem;
+    }
+    
+    .slide-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+    
+    /* Categoria título mobile */
+    .categoria {
+        margin: 20px 0;
+        padding: 0 15px;
+    }
+    
+    .categoria h2 {
+        font-size: 24px;
+    }
+    
+    .categoria p {
+        font-size: 18px;
+    }
+    
+    /* Catálogo sidebar mobile */
+    .catalog-wrapper {
+        flex-direction: column;
+        padding: 10px;
+    }
+    
+    .catalog-sidebar {
+        width: 100%;
+        position: relative;
+        top: 0;
+        margin-bottom: 15px;
+    }
+    
+    .sidebar-header h3 {
+        font-size: 14px;
+    }
+    
+    .category-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .category-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .cat-icon {
+        font-size: 16px;
+    }
+    
+    /* Catálogo grid mobile */
+    .catalog-main {
+        padding: 10px;
+    }
+    
+    .catalog-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .item-card {
+        padding: 15px;
+    }
+    
+    .item-card img {
+        max-height: 180px;
+    }
+    
+    .titulo {
+        font-size: 14px;
+    }
+    
+    .codigo {
+        font-size: 12px;
+    }
+    
+    .preco {
+        font-size: 16px;
+    }
+    
+    /* Submenu mobile */
+    .submenu-passeio {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+    
+    .submenu-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+    
+    /* Contato mobile */
+    .contato {
+        padding: 30px 15px;
+    }
+    
+    .contato h2 {
+        font-size: 24px;
+    }
+    
+    .contato-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .contato-info,
+    .contato-form {
+        padding: 20px;
+    }
+    
+    .contato-info h3 {
+        font-size: 20px;
+    }
+    
+    .contato-form input,
+    .contato-form textarea {
+        font-size: 14px;
+    }
+    
+    /* Cubos cards mobile */
+    .cubos-grid {
+        grid-template-columns: 1fr;
+        padding: 10px;
+        gap: 15px;
+    }
+    
+    .cubo-card {
+        border-radius: 12px;
+    }
+    
+    .cubo-header {
+        padding: 15px;
+    }
+    
+    .cubo-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .cubo-header .marca-logo {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .cubo-specs {
+        padding: 10px;
+    }
+    
+    .spec-row {
+        padding: 10px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .spec-code {
+        font-size: 0.85rem;
+        min-width: auto;
+        padding: 4px 8px;
+    }
+    
+    .spec-desc {
+        font-size: 0.8rem;
+        width: 100%;
+    }
+    
+    .spec-cart-btn {
+        width: 100%;
+        margin-top: 8px;
+        padding: 8px 15px;
+    }
+    
+    /* Footer mobile */
+    footer {
+        padding: 15px;
+        font-size: 12px;
+    }
+    
+    /* Carrinho flutuante mobile */
+    .carrinho-flutuante {
+        bottom: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+    
+    /* Hero banner mobile */
+    .hero-banner {
+        height: 280px;
+        min-height: 200px;
+        margin: 15px;
+        border-radius: 10px;
+    }
+    
+    /* Intro video mobile */
+    #intro-video {
+        width: 80vw;
+        max-width: 300px;
+    }
+    
+    /* Color popup mobile */
+    .color-popup {
+        min-width: 200px;
+        padding: 15px;
+    }
+    
+    .color-options {
+        gap: 10px;
+    }
+    
+    .color-option {
+        width: 35px;
+        height: 35px;
+    }
+}
+
+/* Muito pequeno - smartphones antigos */
+@media (max-width: 380px) {
+    nav ul li a {
+        padding: 0.4em 0.8em;
+        font-size: 12px;
+    }
+    
+    .logo img {
+        max-width: 150px;
+    }
+    
+    .hero h2 {
+        font-size: 18px !important;
+    }
+    
+    .categoria h2 {
+        font-size: 20px;
+    }
+    
+    .slide-content h3 {
+        font-size: 1.1rem;
+    }
+    
+    .cubo-header h3 {
+        font-size: 1rem;
+    }
+}
