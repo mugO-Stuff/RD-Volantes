@@ -1767,29 +1767,39 @@ body.catalog-page .catalog-wrapper {
 /* Mobile - Smartphones */
 @media (max-width: 600px) {
     html, body {
-        padding-top: 55px;
+        padding-top: 70px;
     }
     
-    /* Header mobile */
+    /* Header mobile - CORRIGIDO */
     header {
-        padding: 5px 10px;
+        padding: 8px 10px;
     }
     
     header .container_top {
-        padding: 10px 10px;
-        flex-direction: column;
-        gap: 10px;
+        padding: 8px 15px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    nav.menu_top {
+        flex: 1;
     }
     
     nav ul {
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        margin: 0;
+        padding: 0;
     }
     
     nav ul li a {
-        padding: 0.5em 1em;
-        font-size: 14px;
+        padding: 0.4em 0.8em;
+        font-size: 12px;
+        white-space: nowrap;
     }
     
     /* Logo mobile */
@@ -1923,6 +1933,7 @@ body.catalog-page .catalog-wrapper {
         flex-direction: row;
         flex-wrap: wrap;
         gap: 8px;
+        justify-content: center;
     }
     
     .category-btn {
@@ -1934,46 +1945,67 @@ body.catalog-page .catalog-wrapper {
         font-size: 16px;
     }
     
-    /* Catálogo grid mobile */
+    /* Catálogo grid mobile - CORRIGIDO */
     .catalog-main {
         padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .catalog-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px;
     }
     
     .item-card {
-        padding: 15px;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .item-card img {
-        max-height: 180px;
+        max-height: 120px;
+        width: 100%;
+        object-fit: contain;
     }
     
     .titulo {
-        font-size: 14px;
+        font-size: 11px;
+        line-height: 1.2;
+        min-height: 26px;
     }
     
     .codigo {
-        font-size: 12px;
+        font-size: 10px;
     }
     
     .preco {
-        font-size: 16px;
+        font-size: 14px;
+    }
+    
+    .item-qtd {
+        width: 40px;
+        padding: 4px;
+        font-size: 12px;
+    }
+    
+    .btn-add {
+        padding: 6px 10px;
+        font-size: 11px;
     }
     
     /* Submenu mobile */
     .submenu-passeio {
-        flex-direction: column;
-        gap: 10px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
         padding: 10px;
+        justify-content: center;
     }
     
     .submenu-btn {
-        padding: 10px 15px;
-        font-size: 14px;
+        padding: 8px 12px;
+        font-size: 12px;
     }
     
     /* Contato mobile */
@@ -2046,13 +2078,13 @@ body.catalog-page .catalog-wrapper {
     
     .spec-desc {
         font-size: 0.8rem;
-        width: 100%;
+        flex: 1;
+        min-width: 150px;
     }
     
     .spec-cart-btn {
-        width: 100%;
-        margin-top: 8px;
-        padding: 8px 15px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
     }
     
     /* Footer mobile */
@@ -2103,8 +2135,8 @@ body.catalog-page .catalog-wrapper {
 /* Muito pequeno - smartphones antigos */
 @media (max-width: 380px) {
     nav ul li a {
-        padding: 0.4em 0.8em;
-        font-size: 12px;
+        padding: 0.3em 0.6em;
+        font-size: 11px;
     }
     
     .logo img {
@@ -2125,5 +2157,32 @@ body.catalog-page .catalog-wrapper {
     
     .cubo-header h3 {
         font-size: 1rem;
+    }
+    
+    /* Catálogo ainda menor */
+    .catalog-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+    
+    .item-card {
+        padding: 8px;
+    }
+    
+    .item-card img {
+        max-height: 100px;
+    }
+    
+    .titulo {
+        font-size: 10px;
+    }
+    
+    .preco {
+        font-size: 12px;
+    }
+    
+    .btn-add {
+        padding: 5px 8px;
+        font-size: 10px;
     }
 }
