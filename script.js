@@ -336,7 +336,7 @@ function mostrarPopupCores(btn, card, cores) {
 
     popup.innerHTML = `
         <div class="color-popup-header">
-            <span>Selecione a cor</span>
+            <span>Seleciona a Cor do Aplique</span>
             <button class="color-popup-close">&times;</button>
         </div>
         <div class="color-options">
@@ -830,20 +830,75 @@ function inicializarCatalogo() {
 // INICIALIZAÇÃO
 // ==================================
 document.addEventListener("DOMContentLoaded", () => {
+        // Se acessar a página já com #catalogo-coloridos, abrir direto a aba Variados
+        if (window.location.pathname.includes('categoria-passeio.html') && window.location.hash === '#catalogo-coloridos') {
+            setTimeout(() => {
+                const variadoSidebar = document.querySelector('.category-list .category-btn[href="#catalogo-coloridos"]');
+                if (variadoSidebar) {
+                    variadoSidebar.click();
+                }
+            }, 10);
+        }
     setupIntroVideo();
     setupPdfButton();
     inicializarCatalogo(); // Carrega o catálogo via JSON
-    
+
+    // Corrige o clique do menu lateral "Variados" na categoria passeio
+    if (window.location.pathname.includes('categoria-passeio.html')) {
+        const variadoSidebar = document.querySelector('.category-list .category-btn[href="#catalogo-coloridos"]');
+        const passeioSidebar = document.querySelector('.category-list .category-btn[href="categoria-passeio.html"]');
+        if (variadoSidebar) {
+            variadoSidebar.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Garante que sempre mostra a aba Variados na primeira tentativa
+                const padrao = document.getElementById('catalogo-padrao');
+                const coloridos = document.getElementById('catalogo-coloridos');
+                if (padrao && coloridos) {
+                    padrao.style.display = 'none';
+                    padrao.hidden = true;
+                    coloridos.style.display = 'grid';
+                    coloridos.hidden = false;
+                    if (!coloridos.dataset.carregado) {
+                        carregarCatalogoJSON('passeio-coloridos.json', 'catalogo-coloridos').then(() => {
+                            coloridos.dataset.carregado = 'true';
+                        });
+                    }
+                }
+                document.querySelectorAll('.category-list .category-btn').forEach(btn => btn.classList.remove('active'));
+                variadoSidebar.classList.add('active');
+            });
+        }
+        // Passeio sempre mostra o catálogo padrão e deixa "Passeio" ativo
+        if (passeioSidebar) {
+            passeioSidebar.addEventListener('click', function(e) {
+                // Só manipula se já estiver na página
+                if (window.location.pathname.endsWith('categoria-passeio.html')) {
+                    e.preventDefault();
+                    const padrao = document.getElementById('catalogo-padrao');
+                    const coloridos = document.getElementById('catalogo-coloridos');
+                    if (padrao && coloridos) {
+                        padrao.style.display = 'grid';
+                        padrao.hidden = false;
+                        coloridos.style.display = 'none';
+                        coloridos.hidden = true;
+                    }
+                    document.querySelectorAll('.category-list .category-btn').forEach(btn => btn.classList.remove('active'));
+                    passeioSidebar.classList.add('active');
+                }
+            });
+        }
+    }
+
     if (document.getElementById("listaCarrinho") || document.getElementById("carrinho-itens")) {
         console.log("🔍 Página do carrinho detectada");
         console.log("📦 Carrinho no localStorage:", localStorage.getItem("carrinho"));
         console.log("📋 Carrinho parseado:", safeGetCarrinho());
         renderCarrinhoPage();
     }
-    
+
     // Setup formulário de contato WhatsApp (index.html)
     setupFormContatoWhatsApp();
-    
+
     // Setup botão enviar orçamento WhatsApp (carrinho.html)
     setupBotaoOrcamentoWhatsApp();
 });
