@@ -1,3 +1,25 @@
+
+
+    /* ===========================
+    TOTAL DO CARRINHO
+       =========================== */
+    .carrinho-total {
+        text-align: right;
+        margin-top: 16px;
+        margin-right: 340px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #000000;
+    }
+
+    /* Underline nos nomes dos itens do carrinho */
+    .carrinho-item span:first-child {
+        display: block;
+        border-bottom: 1px solid #222;
+        padding-bottom: 4px;
+        margin-bottom: 4px;
+    }
+
 /* ===========================
    SEÇÃO DE NOVIDADES/LANÇAMENTOS
    =========================== */
@@ -9,6 +31,11 @@
     margin-right: auto;
     margin-right: auto;
     margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
 }
 .novidades-titulo {
     color: #fff;
@@ -1235,11 +1262,17 @@ body.catalog-page .catalogo {
     box-shadow: #5fabe6 0px 3px 8px;
     color: #fff;
     border: none;
-    padding: 8px 12px;
+    padding: 6px 18px;
     border-radius: 6px;
     cursor: pointer;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin: 50px 0;
+    font-size: 16px;
+    font-weight: 800;
+    width: auto;
+    min-width: 120px;
+    transition: background .2s;
+    margin-right: 10px;
+    margin-left: 10px;
 }
 
 .btn-gerar-pdf:hover { 
@@ -1251,12 +1284,15 @@ body.catalog-page .catalogo {
     box-shadow: #008000 0px 3px 8px;
     color: #fff;
     border: none;
-    padding: 8px 10px;
-    border-radius: 8px;
+    padding: 6px 18px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 40px;
+    font-size: 16px;
+    font-weight: 800;
+    margin: 12px 0;
+    width: auto;
+    min-width: 120px;
+    transition: background .2s;
 }
 
 .topo-cliente {

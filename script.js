@@ -830,6 +830,55 @@ function inicializarCatalogo() {
 // INICIALIZAÇÃO
 // ==================================
 document.addEventListener("DOMContentLoaded", () => {
+            // Botão para exportar o carrinho como CSV
+            const btnExportarCsv = document.getElementById('btn-exportar-csv');
+            if (btnExportarCsv) {
+                btnExportarCsv.addEventListener('click', () => {
+                    const carrinho = safeGetCarrinho();
+                    if (!carrinho.length) {
+                        alert('Carrinho vazio!');
+                        return;
+                    }
+                    // Dados do cliente
+                    const clienteNome = (document.getElementById('clienteNome')?.value || '').trim();
+                    const clienteCNPJ = (document.getElementById('clienteCNPJ')?.value || '').trim();
+                    const clienteEmail = (document.getElementById('clienteEmail')?.value || '').trim();
+                    const clienteTelefone = (document.getElementById('clienteTelefone')?.value || '').trim();
+
+                    // Títulos
+                    const tituloCliente = 'DADOS DO CLIENTE';
+                    const tituloProdutos = 'ITENS DO CARRINHO';
+
+                    // Cabeçalhos CSV em caixa alta
+                    const header = ['CÓDIGO', 'DESCRIÇÃO', 'QUANTIDADE', 'PREÇO'];
+                    // Corrige acentuação para UTF-8
+                    const rows = carrinho.map(item => [
+                        '"' + (item.codigo || '').replace(/"/g, '""') + '"',
+                        '"' + (item.descricao || '').replace(/"/g, '""') + '"',
+                        item.qtd || 1,
+                        (Number(item.preco) || 0).toFixed(2).replace('.', ',')
+                    ]);
+
+                    let csv = '\uFEFF'; // BOM para Excel
+                    csv += tituloCliente + '\n';
+                    csv += 'Nome;' + '"' + clienteNome.replace(/"/g, '""') + '"' + '\n';
+                    csv += 'CNPJ;' + '"' + clienteCNPJ.replace(/"/g, '""') + '"' + '\n';
+                    csv += 'E-mail;' + '"' + clienteEmail.replace(/"/g, '""') + '"' + '\n';
+                    csv += 'Telefone;' + '"' + clienteTelefone.replace(/"/g, '""') + '"' + '\n';
+                    csv += '\n\n\n'; // Três linhas em branco
+                    csv += tituloProdutos + '\n';
+                    csv += header.join(';') + '\n';
+                    csv += rows.map(r => r.join(';')).join('\n');
+                    // Cria e baixa o arquivo
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'carrinho.csv';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+            }
         // Se acessar a página já com #catalogo-coloridos, abrir direto a aba Variados
         if (window.location.pathname.includes('categoria-passeio.html') && window.location.hash === '#catalogo-coloridos') {
             setTimeout(() => {
