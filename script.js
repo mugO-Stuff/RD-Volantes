@@ -241,17 +241,21 @@ function adicionarAoCarrinhoDirecto(card, btn, codigoOverride = null, corNome = 
 }
 
 // Função para adicionar cubo ao carrinho (página categoria-cubos)
-function adicionarCuboAoCarrinho(codigo, descricao) {
+function adicionarCuboAoCarrinho(codigo, descricao, preco = 0) {
     const carrinho = safeGetCarrinho();
     const existente = carrinho.find(it => it.codigo === codigo);
-    
+    preco = Number(preco) || 0;
     if (existente) {
         existente.qtd = (Number(existente.qtd) || 0) + 1;
+        // Atualiza preço se for 0 e agora veio um válido
+        if ((!existente.preco || existente.preco === 0) && preco > 0) {
+            existente.preco = preco;
+        }
     } else {
         carrinho.push({ 
             codigo: codigo, 
             descricao: descricao, 
-            preco: 0, // Preço sob consulta
+            preco: preco, 
             qtd: 1 
         });
     }
@@ -261,7 +265,7 @@ function adicionarCuboAoCarrinho(codigo, descricao) {
         return;
     }
     
-    console.log("✅ Cubo adicionado:", { codigo, descricao });
+    console.log("✅ Cubo adicionado:", { codigo, descricao, preco });
     
     // Feedback visual
     const icone = document.getElementById('icone-carrinho');
@@ -449,6 +453,7 @@ function setupPdfButton() {
         const clienteCNPJ = (document.getElementById("clienteCNPJ")?.value || "").trim();
         const clienteEmail = (document.getElementById("clienteEmail")?.value || "").trim();
         const clienteTelefone = (document.getElementById("clienteTelefone")?.value || "").trim();
+        const clienteObs = (document.getElementById("clienteObs")?.value || "").trim();
 
         if (!window.jspdf?.jsPDF) {
             alert("jsPDF não disponível.");
@@ -500,6 +505,14 @@ function setupPdfButton() {
             y += 5;
         }
         if (clienteNome || clienteCNPJ || clienteEmail || clienteTelefone) y += 4;
+        if (clienteObs) {
+            doc.setFont("courier", "normal");
+            doc.text("Observação:", marginLeft, y);
+            y += 5;
+            const obsLines = doc.splitTextToSize(clienteObs, 120);
+            doc.text(obsLines, marginLeft, y);
+            y += obsLines.length * 5 + 2;
+        }
 
         doc.setFont("courier", "bold");
         doc.text("Código", marginLeft, y);
@@ -537,7 +550,13 @@ function setupPdfButton() {
         doc.setFontSize(12);
         doc.text(`Total: R$ ${total.toFixed(2)}`, marginLeft, y + 8);
 
-        doc.save("Orçamento.pdf");
+        // Gera nome do arquivo com data atual DD-MM-AA
+        const hoje = new Date();
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const ano = String(hoje.getFullYear()).slice(-2);
+        const nomeArquivo = `Orçamento-${dia}-${mes}-${ano}.pdf`;
+        doc.save(nomeArquivo);
     });
 }
 
@@ -586,7 +605,9 @@ const SHEETS_ABAS = {
     'catalogo-passeio.json': 'passeio',
     'catalogo-pesado.json': 'pesado',
     'catalogo-cubos.json': 'cubos',
-    'passeio-coloridos.json': 'coloridos'
+    'passeio-coloridos.json': 'coloridos',
+    'catalogo-outros.json': 'variados',
+    'catalogo-tampas.json': 'tampas'
 };
 
 // Define se usa Google Sheets (true) ou arquivos JSON locais (false)
@@ -673,14 +694,66 @@ async function carregarDadosGoogleSheets(nomeAba) {
         for (let i = 0; i < rows.length; i++) {
             const cells = rows[i].c;
             if (cells && cells[0] && cells[0].v) {
-                const produto = {
-                    codigo: cells[0]?.v || '',
-                    descricao: cells[1]?.v || '',
-                    preco: parseFloat(cells[2]?.v) || 0,
-                    imagem: cells[3]?.v || ''
-                };
-                if (cells[4] && cells[4].v) {
-                    produto.cores = parsearCores(cells[4].v);
+                let produto;
+                let precoValor = 0;
+                if (nomeAba === 'tampas') {
+                    // Coluna C (índice 2)
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    produto = {
+                        codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
+                        preco: precoValor,
+                        imagem: ''
+                    };
+                } else if (nomeAba === 'cubos') {
+                    // Coluna C (índice 2)
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    produto = {
+                        codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
+                        preco: precoValor,
+                        imagem: cells[3]?.v || ''
+                    };
+                    if (cells[4] && cells[4].v) {
+                        produto.cores = parsearCores(cells[4].v);
+                    }
+                } else if (nomeAba === 'variados') {
+                    // Coluna D (índice 3)
+                    if (cells[3] && cells[3].v) {
+                        let precoStr = String(cells[3].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    produto = {
+                        codigo: cells[0]?.v || '',
+                        categoria: cells[1]?.v || '',
+                        descricao: cells[2]?.v || '',
+                        preco: precoValor,
+                        imagem: ''
+                    };
+                    if (cells[4] && cells[4].v) {
+                        produto.cores = parsearCores(cells[4].v);
+                    }
+                } else {
+                    // Padrão antigo
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    produto = {
+                        codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
+                        preco: precoValor,
+                        imagem: cells[3]?.v || ''
+                    };
+                    if (cells[4] && cells[4].v) {
+                        produto.cores = parsearCores(cells[4].v);
+                    }
                 }
                 produtos.push(produto);
             }
@@ -722,37 +795,128 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
             console.log(`✅ ${produtos.length} produtos carregados de ${arquivoJSON} (JSON local)`);
         }
 
-        container.innerHTML = ''; // Limpa o container
+        container.innerHTML = '';
 
-        produtos.forEach(produto => {
-            const card = document.createElement('div');
-            card.classList.add('item-card');
-            
-            // Verificar se o produto tem variações de cores
-            const temCores = produto.cores && produto.cores.length > 0;
-            const coresAttr = temCores ? `data-cores='${JSON.stringify(produto.cores)}'` : '';
-            
-            const precoNum = parseFloat(produto.preco) || 0;
-            
-            card.innerHTML = `
-                <img src="${produto.imagem}" alt="${produto.descricao}">
-                <div class="titulo">${produto.descricao}</div>
-                <div class="preco" data-preco="${precoNum}">R$ ${precoNum.toFixed(2)}</div>
-                <div class="codigo">${produto.codigo}</div>
-                <div class="card-bottom-actions">
-                    <input type="number" min="1" value="1" class="item-qtd">
-                    <button class="btn-add-carrinho"
-                        data-descricao="${produto.descricao}"
-                        data-codigo="${produto.codigo}"
-                        data-preco="${precoNum}"
-                        ${coresAttr}>
-                        Adicionar
-                    </button>
-                </div>
-            `;
-            
-            container.appendChild(card);
-        });
+        // Se for cubos, tampas ou outros, cria cards especiais
+        if (arquivoJSON === 'catalogo-cubos.json' || arquivoJSON === 'catalogo-tampas.json' || arquivoJSON === 'catalogo-outros.json') {
+            let grupos = {};
+            let unicoCard = false;
+            let cardTitulo = '';
+            if (arquivoJSON === 'catalogo-outros.json') {
+                // Agrupa por categoria (coluna B)
+                produtos.forEach(produto => {
+                    const categoria = produto.categoria || produto["categoria"] || produto["tipo"] || produto["Categoria"] || produto["Tipo"] || produto.tipo || 'Outros';
+                    if (!grupos[categoria]) grupos[categoria] = [];
+                    grupos[categoria].push(produto);
+                });
+            } else if (arquivoJSON === 'catalogo-tampas.json') {
+                // Um único card para todas as tampas
+                grupos = { 'Tampas': produtos };
+                unicoCard = true;
+                cardTitulo = 'Tampas';
+            } else {
+                grupos = { 'Cubos': produtos };
+                unicoCard = true;
+                cardTitulo = 'Cubos';
+            }
+
+            // Adiciona gap entre os cards de categoria
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.gap = '32px'; // Espaço entre categorias
+
+            Object.entries(grupos).sort(([a], [b]) => a.localeCompare(b)).forEach(([categoria, lista]) => {
+                const card = document.createElement('div');
+                card.classList.add('cubo-card');
+                card.style.margin = '0'; // Remove margem individual, usa gap do container
+                card.innerHTML = `
+                    <div class="cubo-header" style="background:#d84040;display:flex;align-items:center;gap:12px;padding:18px 20px 10px 20px;border-top-left-radius:18px;border-top-right-radius:18px;">
+                        <span style="font-size:2.2rem;display:flex;align-items:center;justify-content:center;width:48px;height:48px;background:#fff;border-radius:10px;font-weight:bold;color:#d84040;">📦</span>
+                        <h3 style="color:#fff;font-size:1.3rem;letter-spacing:1px;font-weight:700;margin:0;">${unicoCard ? cardTitulo : categoria}</h3>
+                    </div>
+                    <div class="cubo-specs" style="background:#18191b;padding:18px 20px 18px 20px;border-bottom-left-radius:18px;border-bottom-right-radius:18px;"></div>
+                `;
+                const specs = card.querySelector('.cubo-specs');
+                lista.forEach(produto => {
+                    const row = document.createElement('div');
+                    row.classList.add('spec-row');
+                    row.style.display = 'flex';
+                    row.style.alignItems = 'center';
+                    row.style.gap = '16px';
+                    row.style.marginBottom = '8px';
+
+                    const code = document.createElement('span');
+                    code.className = 'spec-code';
+                    code.innerHTML = `<strong style="font-size:1.25rem;">${produto.codigo}</strong>`;
+
+                    const desc = document.createElement('span');
+                    desc.className = 'spec-desc';
+                    desc.innerHTML = `<strong>${produto.descricao}</strong>`;
+
+                    // Preço
+                    const preco = document.createElement('span');
+                    preco.className = 'spec-preco';
+                    preco.style.color = '#fff';
+                    preco.style.background = '#222';
+                    preco.style.fontWeight = 'bold';
+                    preco.style.fontSize = '0.95rem';
+                    preco.style.padding = '4px 12px';
+                    preco.style.borderRadius = '6px';
+                    preco.style.marginLeft = '8px';
+                    preco.textContent = 'R$ ' + (parseFloat(produto.preco).toFixed(2));
+
+                    const btn = document.createElement('button');
+                    btn.className = 'spec-cart-btn';
+                    btn.innerHTML = '🛒';
+                    btn.onclick = function() {
+                        adicionarCuboAoCarrinho(produto.codigo, produto.descricao, produto.preco);
+                    };
+
+                    row.appendChild(code);
+                    row.appendChild(desc);
+                    row.appendChild(preco);
+                    row.appendChild(btn);
+                    specs.appendChild(row);
+                });
+                container.appendChild(card);
+            });
+        } else {
+            // Padrão antigo para outras categorias
+            produtos.forEach(produto => {
+                const card = document.createElement('div');
+                card.classList.add('item-card');
+
+                // Verificar se o produto tem variações de cores
+                const temCores = produto.cores && produto.cores.length > 0;
+                const coresAttr = temCores ? `data-cores='${JSON.stringify(produto.cores)}'` : '';
+
+                // Garante que o preço é um número válido (mesmo se vier string vazia ou null)
+                let precoNum = 0;
+                if (produto.preco !== undefined && produto.preco !== null && produto.preco !== '') {
+                    precoNum = Number(String(produto.preco).replace(/[^\d.,-]/g, '').replace(',', '.'));
+                    if (isNaN(precoNum) || !isFinite(precoNum)) precoNum = 0;
+                }
+
+                card.innerHTML = `
+                    <img src="${produto.imagem}" alt="${produto.descricao}">
+                    <div class="titulo">${produto.descricao}</div>
+                    <div class="preco" data-preco="${precoNum}">R$ ${precoNum.toFixed(2)}</div>
+                    <div class="codigo">${produto.codigo}</div>
+                    <div class="card-bottom-actions">
+                        <input type="number" min="1" value="1" class="item-qtd">
+                        <button class="btn-add-carrinho"
+                            data-descricao="${produto.descricao}"
+                            data-codigo="${produto.codigo}"
+                            data-preco="${precoNum}"
+                            ${coresAttr}>
+                            Adicionar
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
 
     } catch (error) {
         console.error(`Erro ao carregar catálogo:`, error);
@@ -818,6 +982,21 @@ function inicializarCatalogo() {
         return;
     }
 
+    // Página de cubos: carregar catálogo de cubos no container correto
+    if (filename === 'categoria-cubos.html' && document.getElementById('catalogo-cubos')) {
+        carregarCatalogoJSON('catalogo-cubos.json', 'catalogo-cubos');
+        return;
+    }
+    // Página de tampas: carregar catálogo de tampas no container correto
+    if (filename === 'tampas.html' && document.getElementById('catalogo-tampas')) {
+        carregarCatalogoJSON('catalogo-tampas.json', 'catalogo-tampas');
+        return;
+    }
+    // Página de outros: carregar catálogo de outros no container correto
+    if (filename === 'outros.html' && document.getElementById('catalogo-outros')) {
+        carregarCatalogoJSON('catalogo-outros.json', 'catalogo-outros');
+        return;
+    }
     // Demais páginas: comportamento padrão único
     const catalogoContainer = document.querySelector('.catalogo');
     if (arquivoJSON && catalogoContainer) {
@@ -865,6 +1044,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     csv += 'CNPJ;' + '"' + clienteCNPJ.replace(/"/g, '""') + '"' + '\n';
                     csv += 'E-mail;' + '"' + clienteEmail.replace(/"/g, '""') + '"' + '\n';
                     csv += 'Telefone;' + '"' + clienteTelefone.replace(/"/g, '""') + '"' + '\n';
+                    csv += 'Observação;' + '"' + (document.getElementById('clienteObs')?.value || '').replace(/"/g, '""') + '"' + '\n';
                     csv += '\n\n\n'; // Três linhas em branco
                     csv += tituloProdutos + '\n';
                     csv += header.join(';') + '\n';
@@ -873,7 +1053,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
                     const link = document.createElement('a');
                     link.href = URL.createObjectURL(blob);
-                    link.download = 'carrinho.csv';
+                    // Gera nome do arquivo com data atual DD-MM-AA
+                    const hoje = new Date();
+                    const dia = String(hoje.getDate()).padStart(2, '0');
+                    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+                    const ano = String(hoje.getFullYear()).slice(-2);
+                    const nomeArquivo = `Orçamento-${dia}-${mes}-${ano}.csv`;
+                    link.download = nomeArquivo;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
