@@ -1,3 +1,73 @@
+/* ===========================
+   CONTATO (SEM FORMULÁRIO)
+   =========================== */
+.contato {
+    background: #000;
+    padding: 40px 0 0 0;
+}
+.contato h2,
+.contato h3,
+.contato h4 {
+    color: #fff;
+}
+.contato p {
+    color: #ccc;
+}
+.contato-grid {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+.contato-info {
+    background: #000000;
+    border-radius: 10px;
+    padding: 35px 50px;
+    color: #fff;
+    flex: 1;
+    min-width: 320px;
+    box-shadow: 0 2px 8px rgba(13, 13, 13, 0.18);
+}
+.contato-info h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+.contato-info h4 {
+    margin-top: 20px;
+    font-size: 18px;
+}
+.btn-ligar, .btn-whatsapp {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #25D366;
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 999px;
+    transition: 0.3s;
+    width: fit-content;
+    min-width: 120px;
+    margin-top: 10px;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(13, 13, 13, 0.10);
+}
+.btn-ligar {
+    background: #4b4a4a;
+}
+.btn-whatsapp img {
+    width: 22px;
+    height: 22px;
+}
+.btn-whatsapp:hover {
+    background: #02742e;
+}
+.btn-ligar:hover {
+    background: #000000;
+}
 
 
     /* ===========================
@@ -232,10 +302,6 @@ body.index-page .contato p {
     color: #ccc;
 }
 
-body.index-page .contato-info,
-body.index-page .contato-form {
-    background: #111;
-}
 
 body.index-page footer {
     background: #000;
@@ -682,14 +748,6 @@ footer {
 }
 
 /* GRID QUE SEPARA INFO E FORMULÁRIO */
-.contato-grid {
-    max-width: 1100px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr); /* lado a lado */
-    gap: 40px;
-    align-items: start;
-}
 
 /* HERO CATALOGO */
 
@@ -724,99 +782,10 @@ footer {
 }
 
 /* BLOCO DE INFORMAÇÕES */
-.contato-info {
-    text-align: left;
-}
-
-.contato-info h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-
-.contato-info h4 {
-    margin-top: 20px;
-    font-size: 18px;
-}
 
 /* BOTÕES */
-.btn-whatsapp, .btn-ligar, .btn-enviar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-
-    padding: 12px 20px;
-    background: #25D366;
-    color: #fff;
-    text-decoration: none;
-
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 8px;
-    transition: 0.3s;
-    width: 100%;
-    margin-top: 10px;
-}
-
-.btn-ligar {
-    background: #4b4a4a;
-}
-
-.btn-whatsapp img {
-    width: 30px;
-    height: 30px;
-}
-
-/* HOVERS */
-.btn-whatsapp:hover {
-    background: #02742e;
-}
-.btn-ligar:hover {
-    background: #000000;
-}
-.btn-enviar:hover {
-    background: #02742e;
-}
 
 /* FORMULÁRIO */
-.contato-form {
-    background: rgb(28, 28, 28);
-    padding: 35px 50px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(13, 13, 13, 0.327);
-    text-align: left;
-    color: inherit;
-    border: none;
-    margin-left: 50px;
-}
-
-.contato-form h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-
-.contato-form input {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    background: #fff;
-    color: inherit;
-}
-
-.contato-form input#whatsapp,
-.contato-form input[name*="whats" i],
-.contato-form input[placeholder*="whats" i],
-.contato-form input[id*="whats" i] {
-    width: 80%;
-    max-width: 360px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    float: none;
-}
 
 /* ===========================
    CATEGORY SLIDES
@@ -2219,19 +2188,7 @@ body.catalog-page .catalog-wrapper {
         gap: 20px;
     }
     
-    .contato-info,
-    .contato-form {
-        padding: 20px;
-    }
-    
-    .contato-info h3 {
-        font-size: 20px;
-    }
-    
-    .contato-form input,
-    .contato-form textarea {
-        font-size: 14px;
-    }
+
     
     /* Cubos cards mobile */
     .cubos-grid {

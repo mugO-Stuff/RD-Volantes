@@ -1009,6 +1009,93 @@ function inicializarCatalogo() {
 // INICIALIZAÇÃO
 // ==================================
 document.addEventListener("DOMContentLoaded", () => {
+                    // Pesquisa global nos catálogos
+                    const inputPesquisaCatalogo = document.getElementById('inputPesquisaCatalogo');
+                    const resultadoPesquisaCatalogo = document.getElementById('resultadoPesquisaCatalogo');
+                    if (inputPesquisaCatalogo && resultadoPesquisaCatalogo) {
+                        let timeoutPesquisaCat;
+                        inputPesquisaCatalogo.addEventListener('input', async () => {
+                            const termo = inputPesquisaCatalogo.value.trim().toLowerCase();
+                            if (!termo) {
+                                resultadoPesquisaCatalogo.innerHTML = '';
+                                return;
+                            }
+                            resultadoPesquisaCatalogo.innerHTML = '';
+                            clearTimeout(timeoutPesquisaCat);
+                            timeoutPesquisaCat = setTimeout(async () => {
+                                resultadoPesquisaCatalogo.innerHTML = '<div style="color:#888;font-size:13px;">Buscando...</div>';
+                                const abas = ['passeio', 'pesado', 'cubos', 'tampas', 'outros'];
+                                let resultados = [];
+                                for (const aba of abas) {
+                                    try {
+                                        const dados = await carregarDadosGoogleSheets(aba);
+                                        if (Array.isArray(dados)) {
+                                            resultados = resultados.concat(
+                                                dados.filter(item =>
+                                                    (item.codigo && String(item.codigo).toLowerCase().includes(termo)) ||
+                                                    (item.descricao && item.descricao.toLowerCase().includes(termo))
+                                                ).map(item => ({ ...item, aba }))
+                                            );
+                                        }
+                                    } catch (e) {}
+                                }
+                                if (!resultados.length) {
+                                    resultadoPesquisaCatalogo.innerHTML = '<div style="color:#d84040;font-size:14px;">Nenhum item encontrado.</div>';
+                                    return;
+                                }
+                                resultadoPesquisaCatalogo.innerHTML = `<div style='max-width:340px;margin-left:auto;max-height:108px;overflow-y:auto;'>` + resultados.slice(0, 10).map(item =>
+                                    `<div style='background:#fafbfc;border-radius:6px;padding:4px 8px;margin-bottom:3px;box-shadow:0 1px 2px #0001;display:flex;align-items:center;gap:7px;min-height:28px;'>
+                                        <span style='font-weight:600;color:#d84040;font-size:16px;min-width:54px;'>${item.codigo || ''}</span>
+                                        <span style='flex:1;font-size:16px;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>${item.descricao || ''}</span>
+                                        <span style='font-size:12px;color:#888;padding:0 3px;'>${item.aba}</span>
+                                        <button style='margin-left:7px;padding:2px 10px;border-radius:5px;background:#25D366;color:#fff;border:none;cursor:pointer;font-size:15px;transition:background .18s;' onmouseover="this.style.background='#1ea955'" onmouseout="this.style.background='#25D366'" onclick="adicionarCuboAoCarrinho && adicionarCuboAoCarrinho('${item.codigo}','${(item.descricao||'').replace(/'/g, '\'')}',${item.preco||0})">+</button>
+                                    </div>`
+                                ).join('') + `</div>`;
+                            }, 200);
+                        });
+                    }
+                // Pesquisa global compacta e visual
+                const inputPesquisa = document.getElementById('inputPesquisaCarrinho');
+                const resultadoPesquisaGlobal = document.getElementById('resultadoPesquisaGlobal');
+                if (inputPesquisa && resultadoPesquisaGlobal) {
+                    let timeoutPesquisa;
+                    inputPesquisa.addEventListener('input', async () => {
+                        const termo = inputPesquisa.value.trim().toLowerCase();
+                        resultadoPesquisaGlobal.innerHTML = '';
+                        if (!termo) return;
+                        clearTimeout(timeoutPesquisa);
+                        timeoutPesquisa = setTimeout(async () => {
+                            resultadoPesquisaGlobal.innerHTML = '<div style="color:#888;font-size:13px;">Buscando...</div>';
+                            const abas = ['passeio', 'pesado', 'cubos', 'tampas', 'outros'];
+                            let resultados = [];
+                            for (const aba of abas) {
+                                try {
+                                    const dados = await carregarDadosGoogleSheets(aba);
+                                    if (Array.isArray(dados)) {
+                                        resultados = resultados.concat(
+                                            dados.filter(item =>
+                                                (item.codigo && String(item.codigo).toLowerCase().includes(termo)) ||
+                                                (item.descricao && item.descricao.toLowerCase().includes(termo))
+                                            ).map(item => ({ ...item, aba }))
+                                        );
+                                    }
+                                } catch (e) {}
+                            }
+                            if (!resultados.length) {
+                                resultadoPesquisaGlobal.innerHTML = '<div style="color:#d84040;font-size:14px;">Nenhum item encontrado.</div>';
+                                return;
+                            }
+                            resultadoPesquisaGlobal.innerHTML = `<div style='max-width:340px;margin-left:auto;max-height:108px;overflow-y:auto;'>` + resultados.slice(0, 10).map(item =>
+                                `<div style='background:#fafbfc;border-radius:6px;padding:4px 8px;margin-bottom:3px;box-shadow:0 1px 2px #0001;display:flex;align-items:center;gap:7px;min-height:28px;'>
+                                    <span style='font-weight:600;color:#d84040;font-size:16px;min-width:54px;'>${item.codigo || ''}</span>
+                                    <span style='flex:1;font-size:16px;color:#222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;'>${item.descricao || ''}</span>
+                                    <span style='font-size:12px;color:#888;padding:0 3px;'>${item.aba}</span>
+                                    <button style='margin-left:7px;padding:2px 10px;border-radius:5px;background:#25D366;color:#fff;border:none;cursor:pointer;font-size:15px;transition:background .18s;' onmouseover="this.style.background='#1ea955'" onmouseout="this.style.background='#25D366'" onclick="adicionarCuboAoCarrinho && adicionarCuboAoCarrinho('${item.codigo}','${(item.descricao||'').replace(/'/g, '\'')}',${item.preco||0})">+</button>
+                                </div>`
+                            ).join('') + `</div>`;
+                        }, 200);
+                    });
+                }
             // Botão para exportar o carrinho como CSV
             const btnExportarCsv = document.getElementById('btn-exportar-csv');
             if (btnExportarCsv) {
@@ -1131,38 +1218,13 @@ document.addEventListener("DOMContentLoaded", () => {
         renderCarrinhoPage();
     }
 
-    // Setup formulário de contato WhatsApp (index.html)
-    setupFormContatoWhatsApp();
+
 
     // Setup botão enviar orçamento WhatsApp (carrinho.html)
     setupBotaoOrcamentoWhatsApp();
 });
 
-// ==================================
-// WHATSAPP - FORMULÁRIO DE CONTATO (INDEX)
-// ==================================
-function setupFormContatoWhatsApp() {
-    const form = document.getElementById('formContato');
-    if (!form) return;
-    
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const nome = document.getElementById('nome')?.value || '';
-        const email = document.getElementById('email')?.value || '';
-        const cidade = document.getElementById('cidade')?.value || '';
-        
-        const mensagem = `Olá! Meu nome é ${nome}.%0A` +
-                        `E-mail: ${email}%0A` +
-                        `Cidade: ${cidade}%0A%0A` +
-                        `Gostaria de mais informações sobre os produtos.`;
-        
-        const telefone = '5512997271120';
-        const url = `https://wa.me/${telefone}?text=${mensagem}`;
-        
-        window.open(url, '_blank');
-    });
-}
+
 
 // ==================================
 // WHATSAPP - ORÇAMENTO DO CARRINHO

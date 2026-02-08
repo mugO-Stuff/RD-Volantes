@@ -75,7 +75,10 @@
         <div class="topo-cliente">
             <h2>Itens no Carrinho</h2>
         </div>
-
+        <div class="carrinho-pesquisa" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
+            <input id="inputPesquisaCarrinho" type="text" placeholder="Pesquisar..." style="width:180px;min-width:100px;max-width:100%;padding:5px 9px;border-radius:7px;border:1px solid #ccc;font-size:13px;">
+        </div>
+        <div id="resultadoPesquisaGlobal" style="margin-bottom:10px;"></div>
         <div id="listaCarrinho" class="carrinho-lista"></div>
         <!-- elemento de listagem (adiciona sem alterar visual por padrão) -->
         <div id="carrinho-list" class="lista-carrinho"></div>
@@ -88,8 +91,6 @@
             <button id="btn-gerar-pdf" class="btn-gerar-pdf" type="button">Gerar PDF do Carrinho</button>
             <button id="btn-exportar-csv" class="btn-exportar-csv btn-whats-carrinho" type="button">Exportar Planilha (CSV)</button>
         </div>
-
-        <!-- Botão WhatsApp removido -->
     </section>
 
 </main>
