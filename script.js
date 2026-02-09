@@ -91,10 +91,20 @@ function carregarProdutos() {
             <img src="${prod.imagem}" alt="${prod.nome}">
             <h3>${prod.nome}</h3>
             <p>${prod.descricao}</p>
-            <span class="preco">R$ ${prod.preco.toFixed(2)}</span>
+            <!-- Preço removido -->
             <button onclick="adicionarAoCarrinho(${prod.id})">Adicionar ao Carrinho</button>
         `;
 
+        // Adiciona evento de clique igual cubos
+        const btn = item.querySelector('.btn-add-carrinho');
+        btn.onclick = function() {
+            window._lastCuboBtnClicked = btn;
+            adicionarAoCarrinhoDirecto(item, btn);
+            btn.classList.add('animado');
+            setTimeout(() => {
+                btn.classList.remove('animado');
+            }, 400);
+        };
         catalogo.appendChild(item);
     });
 }
@@ -183,9 +193,6 @@ document.addEventListener("click", (ev) => {
 
     const card = btn.closest(".item-card");
 
-    // LOG sugeridoPara para depuração
-    console.log('DEBUG sugeridoPara:', btn.dataset.sugeridoPara, card?.dataset?.sugeridoPara);
-
     // Verificar se o produto tem cores disponíveis
     const coresData = btn.dataset.cores;
     if (coresData) {
@@ -224,39 +231,11 @@ function adicionarAoCarrinhoDirecto(card, btn, codigoOverride = null, corNome = 
     const carrinho = safeGetCarrinho();
     const existente = carrinho.find(it => it.codigo === codigo);
     // Tenta pegar sugeridoPara do card ou botão, ou dos dados da aba pesado
-    let sugeridoPara = '';
-    if (card && card.dataset && card.dataset.sugeridoPara) {
-        sugeridoPara = card.dataset.sugeridoPara;
-    } else if (btn.dataset.sugeridoPara) {
-        sugeridoPara = btn.dataset.sugeridoPara;
-    } else {
-        // Busca nos dados da aba coloridos se for produto colorido
-        carregarDadosGoogleSheets('coloridos').then(coloridos => {
-            const normalizar = str => (str || '').toLowerCase().replace(/\s+/g, '');
-            const codigosPlanilha = coloridos.map(p => normalizar(p.codigo));
-            console.log('DEBUG codigosPlanilha coloridos:', codigosPlanilha);
-            const produtoColorido = coloridos.find(p => normalizar(p.codigo) === normalizar(codigo));
-            console.log('DEBUG produtoColorido:', produtoColorido);
-            if (produtoColorido && produtoColorido.sugeridoPara) {
-                sugeridoPara = produtoColorido.sugeridoPara;
-            }
-            console.log('DEBUG sugeridoPara (async):', sugeridoPara);
-            if (existente) {
-                existente.qtd = (Number(existente.qtd) || 0) + qtd;
-            } else {
-                const item = { codigo, descricao, preco, qtd, sugeridoPara };
-                console.log('DEBUG item salvo (async):', item);
-                carrinho.push(item);
-            }
-            safeSaveCarrinho(carrinho);
-            renderCarrinhoPage();
-        });
-        return;
-    }
+    // (Removido: sugeridoPara)
     if (existente) {
         existente.qtd = (Number(existente.qtd) || 0) + qtd;
     } else {
-        const item = { codigo, descricao, preco, qtd, sugeridoPara };
+        const item = { codigo, descricao, preco, qtd };
         console.log('DEBUG item salvo:', item);
         carrinho.push(item);
     }
@@ -266,42 +245,17 @@ function adicionarAoCarrinhoDirecto(card, btn, codigoOverride = null, corNome = 
         return;
     }
     
-    console.log("✅ Item adicionado:", { codigo, descricao, preco, qtd });
-
-    try {
-        const img = card?.querySelector("img") || card?.querySelector(".item-img");
-        if (img) animarParaCarrinho(img);
-    } catch (e) {}
-}
-
-// Função para adicionar cubo ao carrinho (página categoria-cubos)
-function adicionarCuboAoCarrinho(codigo, descricao, preco = 0) {
-    const carrinho = safeGetCarrinho();
-    const existente = carrinho.find(it => it.codigo === codigo);
-    preco = Number(preco) || 0;
-    if (existente) {
-        existente.qtd = (Number(existente.qtd) || 0) + 1;
-        // Atualiza preço se for 0 e agora veio um válido
-        if ((!existente.preco || existente.preco === 0) && preco > 0) {
-            existente.preco = preco;
-        }
-    } else {
-        carrinho.push({ 
-            codigo: codigo, 
-            descricao: descricao, 
-            preco: preco, 
-            qtd: 1 
-        });
-    }
-
-    if (!safeSaveCarrinho(carrinho)) {
-        alert("Erro ao salvar item no carrinho.");
-        return;
-    }
-    
     console.log("✅ Cubo adicionado:", { codigo, descricao, preco });
     
-    // Feedback visual
+    // Feedback visual: animação no botão que foi clicado
+    if (btn) {
+        btn.classList.add('animado');
+        setTimeout(() => {
+            btn.classList.remove('animado');
+        }, 400);
+    }
+
+    // Feedback visual antigo (ícone do carrinho)
     const icone = document.getElementById('icone-carrinho');
     if (icone) {
         icone.style.transform = 'scale(1.3)';
@@ -415,7 +369,14 @@ function mostrarPopupCores(btn, card, cores) {
             const nomeCor = option.dataset.nome;
             overlay.remove();
             popup.remove();
-            adicionarAoCarrinhoDirecto(card, btn, codigoCor, nomeCor);
+            // Adiciona ao carrinho usando os dados do produto original, mas agora com a cor escolhida
+            if (btn && card) {
+                // Usa a função padrão para adicionar ao carrinho, passando a cor
+                adicionarAoCarrinhoDirecto(card, btn, codigoCor, nomeCor);
+            } else {
+                // Fallback para casos de sugestão ou onde só temos código/descrição
+                adicionarCuboAoCarrinho(codigoCor, nomeCor);
+            }
         });
     });
 }
@@ -559,15 +520,14 @@ function renderCarrinhoPage() {
             <input type="number" min="1" value="${item.qtd}" 
                    style="width:70px; padding:6px;"
                    onchange="updateItemQuantity('${item.codigo}', this.value)">
-            <span style="flex:1;">R$ ${(Number(item.preco) || 0).toFixed(2)}</span>
             <button class="btn-remove" onclick="removeItem('${item.codigo}')">Remover</button>
         `;
         container.appendChild(div);
     });
 
-    const total = carrinho.reduce((s, it) => s + ((Number(it.preco) || 0) * (Number(it.qtd) || 0)), 0);
+    // Remove total do carrinho
     const totalEl = document.getElementById("valorTotal");
-    if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2)}`;
+    if (totalEl) totalEl.textContent = "";
 
     // Itens relacionais (códigos vinculados + descrição da aba cubos + botão adicionar)
     const sugestaoSection = document.getElementById('sugestao-cubos');
@@ -1063,28 +1023,24 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
                     desc.className = 'spec-desc';
                     desc.innerHTML = `<strong>${produto.descricao}</strong>`;
 
-                    // Preço
-                    const preco = document.createElement('span');
-                    preco.className = 'spec-preco';
-                    preco.style.color = '#fff';
-                    preco.style.background = '#222';
-                    preco.style.fontWeight = 'bold';
-                    preco.style.fontSize = '0.95rem';
-                    preco.style.padding = '4px 12px';
-                    preco.style.borderRadius = '6px';
-                    preco.style.marginLeft = '8px';
-                    preco.textContent = 'R$ ' + (parseFloat(produto.preco).toFixed(2));
+                    // Preço removido
 
                     const btn = document.createElement('button');
                     btn.className = 'spec-cart-btn';
                     btn.innerHTML = '🛒';
                     btn.onclick = function() {
+                        window._lastCuboBtnClicked = btn;
                         adicionarCuboAoCarrinho(produto.codigo, produto.descricao, produto.preco);
+                        // Garante atualização visual e funcional
+                        btn.classList.add('animado');
+                        setTimeout(() => {
+                            btn.classList.remove('animado');
+                        }, 400);
                     };
 
                     row.appendChild(code);
                     row.appendChild(desc);
-                    row.appendChild(preco);
+                    // Preço removido
                     row.appendChild(btn);
                     specs.appendChild(row);
                 });
@@ -1096,7 +1052,7 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
                 const card = document.createElement('div');
                 card.classList.add('item-card');
                 if (produto.sugeridoPara) {
-                    card.dataset.sugeridoPara = produto.sugeridoPara;
+                    // Remove qualquer dependência de sugeridoPara
                 }
 
                 // Verificar se o produto tem variações de cores
@@ -1113,7 +1069,7 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
                 card.innerHTML = `
                     <img src="${produto.imagem}" alt="${produto.descricao}">
                     <div class="titulo">${produto.descricao}</div>
-                    <div class="preco" data-preco="${precoNum}">R$ ${precoNum.toFixed(2)}</div>
+                    <!-- Preço removido -->
                     <div class="codigo">${produto.codigo}</div>
                     <div class="card-bottom-actions">
                         <input type="number" min="1" value="1" class="item-qtd">
@@ -1121,13 +1077,31 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
                             data-descricao="${produto.descricao}"
                             data-codigo="${produto.codigo}"
                             data-preco="${precoNum}"
-                            data-sugerido-para="${produto.sugeridoPara || ''}"
                             ${coresAttr}>
                             Adicionar
                         </button>
                     </div>
                 `;
-
+                // Adiciona evento de clique igual cubos
+                const btn = card.querySelector('.btn-add-carrinho');
+                btn.onclick = function() {
+                    window._lastCuboBtnClicked = btn;
+                    const coresData = btn.dataset.cores;
+                    if (coresData) {
+                        try {
+                            const cores = JSON.parse(coresData);
+                            mostrarPopupCores(btn, card, cores);
+                        } catch (e) {
+                            adicionarAoCarrinhoDirecto(card, btn);
+                        }
+                    } else {
+                        adicionarAoCarrinhoDirecto(card, btn);
+                    }
+                    btn.classList.add('animado');
+                    setTimeout(() => {
+                        btn.classList.remove('animado');
+                    }, 400);
+                };
                 container.appendChild(card);
             });
         }
@@ -1479,4 +1453,26 @@ function setupBotaoOrcamentoWhatsApp() {
         
         window.open(url, '_blank');
     });
+}
+
+// ==================================
+// FUNÇÃO PARA ADICIONAR UM CUBO AO CARRINHO
+// ==================================
+function adicionarCuboAoCarrinho(codigo, descricao, preco = 0) {
+    const carrinho = safeGetCarrinho();
+    const existente = carrinho.find(it => it.codigo === codigo);
+    preco = Number(preco) || 0;
+    if (existente) {
+        existente.qtd = (Number(existente.qtd) || 0) + 1;
+        if ((!existente.preco || existente.preco === 0) && preco > 0) {
+            existente.preco = preco;
+        }
+    } else {
+        carrinho.push({ codigo, descricao, preco, qtd: 1 });
+    }
+    if (!safeSaveCarrinho(carrinho)) {
+        alert("Erro ao salvar item no carrinho.");
+        return;
+    }
+    mostrarToast(`${codigo} adicionado ao carrinho!`);
 }

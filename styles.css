@@ -559,7 +559,7 @@ footer {
 
 .contato {
     padding: 60px 20px;
-    background: #000000; /* seção de contato preta */
+    background: #000000;
     text-align: center;
     color: #ffffff;
 }
@@ -573,16 +573,6 @@ footer {
 .contato p {
     font-size: 18px;
     margin-bottom: 25px;
-}
-
-/* GRID QUE SEPARA INFO E FORMULÁRIO */
-.contato-grid {
-    max-width: 1100px;
-    margin: auto;
-    display: grid;
-    grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr); /* lado a lado */
-    gap: 40px;
-    align-items: start;
 }
 
 /* HERO CATALOGO */
@@ -619,7 +609,7 @@ footer {
 
 /* BLOCO DE INFORMAÇÕES */
 .contato-info {
-    text-align: left;
+    text-align: center;
 }
 
 .contato-info h3 {
@@ -634,21 +624,19 @@ footer {
 
 /* BOTÕES */
 .btn-whatsapp, .btn-ligar, .btn-enviar {
-    display: flex;
+    display: inline-block;
     justify-content: center;
     align-items: center;
     gap: 10px;
-
     padding: 12px 20px;
     background: #25D366;
     color: #fff;
     text-decoration: none;
-
     font-size: 18px;
     font-weight: bold;
     border-radius: 8px;
     transition: 0.3s;
-    width: 100%;
+    width: auto;
     margin-top: 10px;
 }
 
@@ -659,57 +647,6 @@ footer {
 .btn-whatsapp img {
     width: 30px;
     height: 30px;
-}
-
-/* HOVERS */
-.btn-whatsapp:hover {
-    background: #02742e;
-}
-.btn-ligar:hover {
-    background: #000000;
-}
-.btn-enviar:hover {
-    background: #02742e;
-}
-
-/* FORMULÁRIO */
-.contato-form {
-    background: rgb(28, 28, 28);
-    padding: 35px 50px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(13, 13, 13, 0.327);
-    text-align: left;
-    color: inherit;
-    border: none;
-    margin-left: 50px;
-}
-
-.contato-form h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-
-.contato-form input {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    background: #fff;
-    color: inherit;
-}
-
-.contato-form input#whatsapp,
-.contato-form input[name*="whats" i],
-.contato-form input[placeholder*="whats" i],
-.contato-form input[id*="whats" i] {
-    width: 80%;
-    max-width: 360px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    float: none;
 }
 
 /* ===========================
@@ -1092,7 +1029,6 @@ body.catalog-page .catalogo {
     transform: scale(1.15);
 }
 
-/* Imagem animada */
 /* estilo da imagem clonada que voa para o carrinho */
 .fly-img {
     border-radius: 6px;
@@ -2301,4 +2237,19 @@ body.catalog-page .catalog-wrapper {
 
 #sugestao-cubos {
     text-align: left !important;
+}
+
+/* Animação de feedback para botões de adicionar ao carrinho */
+.btn-add-carrinho.animado,
+.spec-cart-btn.animado {
+    background: #28a745 !important;
+    color: #fff !important;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Efeito verde para todos os botões de adicionar ao carrinho */
+.btn-add-carrinho.animado {
+    background: #28a745 !important;
+    color: #fff !important;
+    transition: background 0.3s, color 0.3s;
 }
