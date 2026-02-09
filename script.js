@@ -820,7 +820,7 @@ async function carregarDadosGoogleSheets(nomeAba) {
     if (arguments.length > 1 && arguments[1]) {
         planilhaId = arguments[1];
     }
-    const url = `https://opensheet.elk.sh/${planilhaId}/${nomeAba}`;
+    const url = `https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`;
     
     try {
         const response = await fetch(url);
@@ -853,9 +853,8 @@ async function carregarDadosGoogleSheets(nomeAba) {
                 let produto;
                 let precoValor = 0;
                 
-                console.log('DEBUG item', nomeAba, i, item);
-                
                 if (nomeAba === 'passeio' || nomeAba === 'pesado') {
+                    console.log('DEBUG item', nomeAba, i, item);
                     // Parse price
                     const precoStr = String(item.preco || item.Preco || '').replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
                     precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
