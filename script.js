@@ -182,7 +182,10 @@ document.addEventListener("click", (ev) => {
     ev.stopPropagation();
 
     const card = btn.closest(".item-card");
-    
+
+    // LOG sugeridoPara para depuração
+    console.log('DEBUG sugeridoPara:', btn.dataset.sugeridoPara, card?.dataset?.sugeridoPara);
+
     // Verificar se o produto tem cores disponíveis
     const coresData = btn.dataset.cores;
     if (coresData) {
@@ -220,11 +223,42 @@ function adicionarAoCarrinhoDirecto(card, btn, codigoOverride = null, corNome = 
 
     const carrinho = safeGetCarrinho();
     const existente = carrinho.find(it => it.codigo === codigo);
-    
+    // Tenta pegar sugeridoPara do card ou botão, ou dos dados da aba pesado
+    let sugeridoPara = '';
+    if (card && card.dataset && card.dataset.sugeridoPara) {
+        sugeridoPara = card.dataset.sugeridoPara;
+    } else if (btn.dataset.sugeridoPara) {
+        sugeridoPara = btn.dataset.sugeridoPara;
+    } else {
+        // Busca nos dados da aba coloridos se for produto colorido
+        carregarDadosGoogleSheets('coloridos').then(coloridos => {
+            const normalizar = str => (str || '').toLowerCase().replace(/\s+/g, '');
+            const codigosPlanilha = coloridos.map(p => normalizar(p.codigo));
+            console.log('DEBUG codigosPlanilha coloridos:', codigosPlanilha);
+            const produtoColorido = coloridos.find(p => normalizar(p.codigo) === normalizar(codigo));
+            console.log('DEBUG produtoColorido:', produtoColorido);
+            if (produtoColorido && produtoColorido.sugeridoPara) {
+                sugeridoPara = produtoColorido.sugeridoPara;
+            }
+            console.log('DEBUG sugeridoPara (async):', sugeridoPara);
+            if (existente) {
+                existente.qtd = (Number(existente.qtd) || 0) + qtd;
+            } else {
+                const item = { codigo, descricao, preco, qtd, sugeridoPara };
+                console.log('DEBUG item salvo (async):', item);
+                carrinho.push(item);
+            }
+            safeSaveCarrinho(carrinho);
+            renderCarrinhoPage();
+        });
+        return;
+    }
     if (existente) {
         existente.qtd = (Number(existente.qtd) || 0) + qtd;
     } else {
-        carrinho.push({ codigo, descricao, preco, qtd });
+        const item = { codigo, descricao, preco, qtd, sugeridoPara };
+        console.log('DEBUG item salvo:', item);
+        carrinho.push(item);
     }
 
     if (!safeSaveCarrinho(carrinho)) {
@@ -388,6 +422,118 @@ function mostrarPopupCores(btn, card, cores) {
 
 // ==================================
 // RENDERIZAÇÃO DA PÁGINA DO CARRINHO
+// Sugestão de itens relacionais para categoria Pesado
+function renderSugestaoPesado(carrinho) {
+    const sugestaoSection = document.getElementById('sugestao-pesado');
+    if (!sugestaoSection) return;
+    // Busca todos os produtos pesados no carrinho
+    carregarDadosGoogleSheets('pesado').then(pesados => {
+        // Busca todos os pesados com vínculo (coluna E)
+        const pesadosComVinculo = carrinho
+            .map(item => pesados.find(p => (p.codigo || '').toLowerCase() === (item.codigo || '').toLowerCase()))
+            .filter(produto => produto && produto.sugeridoPara && produto.sugeridoPara.trim() !== '');
+        if (!pesadosComVinculo.length) {
+            sugestaoSection.innerHTML = '';
+            return;
+        }
+        carregarDadosGoogleSheets('cubos').then(cubos => {
+            const codigosSugeridos = pesadosComVinculo.flatMap(item => item.sugeridoPara.split(',').map(c => c.trim().toLowerCase()));
+            const codigosCarrinho = carrinho.map(item => (item.codigo || '').toLowerCase());
+            const lista = codigosSugeridos
+                .filter(cod => !codigosCarrinho.includes(cod))
+                .map(cod => {
+                    const cubo = cubos.find(c => (c.codigo || '').toLowerCase() === cod);
+                    const desc = cubo ? ` - ${cubo.descricao}` : '';
+                    const preco = cubo && cubo.preco ? cubo.preco : 0;
+                    return `<li style='color:#d84040;font-size:1.05em;display:flex;align-items:center;gap:10px;'>
+                        <button class="btn-adicionar-sugestao" 
+                            data-codigo="${cod.toUpperCase()}" 
+                            data-descricao="${cubo ? cubo.descricao : ''}"
+                            data-preco="${preco}"
+                            style="margin-right:10px;min-width:110px;text-align:left;">
+                            Adicionar
+                        </button>
+                        <span>${cod.toUpperCase()}${desc}</span>
+                    </li>`;
+                }).join('');
+            sugestaoSection.innerHTML = `<div style='background:#f3f4f6;border-radius:10px;padding:18px 22px;margin-bottom:10px;box-shadow:0 2px 8px #0001;'>
+                <h3 style='color:#d84040;font-size:1.2rem;margin-bottom:8px;'>Itens relacionais (Cubos para Pesado)</h3>
+                <ul style='margin:0;padding:0;list-style:none;'>${lista}</ul>
+            </div>`;
+            sugestaoSection.querySelectorAll('.btn-adicionar-sugestao').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const codigo = btn.getAttribute('data-codigo');
+                    const descricao = btn.getAttribute('data-descricao');
+                    const preco = btn.getAttribute('data-preco');
+                    adicionarCuboAoCarrinho(codigo, descricao, preco);
+                    renderCarrinhoPage();
+                });
+            });
+        });
+    });
+}
+
+// Sugestão de itens relacionais para categoria Coloridos
+function renderSugestaoColoridos(carrinho) {
+    const sugestaoSection = document.getElementById('sugestao-coloridos');
+    if (!sugestaoSection) return;
+    // Busca todos os itens com vínculo na coluna F
+    const coloridosComVinculo = carrinho.filter(item => item.sugeridoColoridos && item.sugeridoColoridos.trim() !== '');
+    if (coloridosComVinculo.length) {
+        carregarDadosGoogleSheets('coloridos').then(coloridos => {
+            const codigosSugeridos = coloridosComVinculo.flatMap(item => item.sugeridoColoridos.split(',').map(c => c.trim().toLowerCase()));
+            const codigosCarrinho = carrinho.map(item => (item.codigo || '').toLowerCase());
+            const lista = codigosSugeridos
+                .filter(cod => !codigosCarrinho.includes(cod))
+                .map(cod => {
+                    const colorido = coloridos.find(c => (c.codigo || '').toLowerCase() === cod);
+                    const desc = colorido ? ` - ${colorido.descricao}` : '';
+                    const preco = colorido && colorido.preco ? colorido.preco : 0;
+                    const cores = colorido && colorido.cores ? colorido.cores : null;
+                    // Serializa cores para o botão
+                    const coresData = cores ? JSON.stringify(cores) : '';
+                    return `<li style='color:#d84040;font-size:1.05em;display:flex;align-items:center;gap:10px;'>
+                        <button class="btn-adicionar-sugestao" 
+                            data-codigo="${cod.toUpperCase()}" 
+                            data-descricao="${colorido ? colorido.descricao : ''}"
+                            data-preco="${preco}"
+                            data-cores='${coresData}'
+                            style="margin-right:10px;min-width:110px;text-align:left;">
+                            Adicionar
+                        </button>
+                        <span>${cod.toUpperCase()}${desc}</span>
+                    </li>`;
+                }).join('');
+            sugestaoSection.innerHTML = `<div style='background:#f3f4f6;border-radius:10px;padding:18px 22px;margin-bottom:10px;box-shadow:0 2px 8px #0001;'>
+                <h3 style='color:#d84040;font-size:1.2rem;margin-bottom:8px;'>Itens relacionais (Coloridos)</h3>
+                <ul style='margin:0;padding:0;list-style:none;'>${lista}</ul>
+            </div>`;
+            sugestaoSection.querySelectorAll('.btn-adicionar-sugestao').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const codigo = btn.getAttribute('data-codigo');
+                    const descricao = btn.getAttribute('data-descricao');
+                    const preco = btn.getAttribute('data-preco');
+                    const coresData = btn.getAttribute('data-cores');
+                    if (coresData && coresData !== 'null' && coresData !== '') {
+                        // Abre pop-up de seleção de cor
+                        try {
+                            const cores = JSON.parse(coresData);
+                            mostrarPopupCores(btn, null, cores);
+                        } catch (e) {
+                            adicionarCuboAoCarrinho(codigo, descricao, preco);
+                            renderCarrinhoPage();
+                        }
+                    } else {
+                        adicionarCuboAoCarrinho(codigo, descricao, preco);
+                        renderCarrinhoPage();
+                    }
+                });
+            });
+        });
+    } else {
+        sugestaoSection.innerHTML = '';
+    }
+}
 // ==================================
 function renderCarrinhoPage() {
     const container = document.getElementById("listaCarrinho") || document.getElementById("carrinho-itens");
@@ -422,6 +568,54 @@ function renderCarrinhoPage() {
     const total = carrinho.reduce((s, it) => s + ((Number(it.preco) || 0) * (Number(it.qtd) || 0)), 0);
     const totalEl = document.getElementById("valorTotal");
     if (totalEl) totalEl.textContent = `R$ ${total.toFixed(2)}`;
+
+    // Itens relacionais (códigos vinculados + descrição da aba cubos + botão adicionar)
+    const sugestaoSection = document.getElementById('sugestao-cubos');
+    if (sugestaoSection) {
+        // Busca todos os volantes com vínculo
+        const volantesComVinculo = carrinho.filter(item => item.sugeridoPara && item.sugeridoPara.trim() !== '');
+        if (volantesComVinculo.length) {
+            carregarDadosGoogleSheets('cubos').then(cubos => {
+                const codigosSugeridos = volantesComVinculo.flatMap(item => item.sugeridoPara.split(',').map(c => c.trim().toLowerCase()));
+                // Filtra para não mostrar itens já no carrinho
+                const codigosCarrinho = carrinho.map(item => (item.codigo || '').toLowerCase());
+                const lista = codigosSugeridos
+                    .filter(cod => !codigosCarrinho.includes(cod))
+                    .map(cod => {
+                        const cubo = cubos.find(c => (c.codigo || '').toLowerCase() === cod);
+                        const desc = cubo ? ` - ${cubo.descricao}` : '';
+                        const preco = cubo && cubo.preco ? cubo.preco : 0;
+                        // Botão adicionar ANTES do código/descrição
+                        return `<li style='color:#d84040;font-size:1.05em;display:flex;align-items:center;gap:10px;'>
+                            <button class="btn-adicionar-sugestao" 
+                                data-codigo="${cod.toUpperCase()}" 
+                                data-descricao="${cubo ? cubo.descricao : ''}"
+                                data-preco="${preco}"
+                                style="margin-right:10px;min-width:110px;text-align:left;">
+                                Adicionar
+                            </button>
+                            <span>${cod.toUpperCase()}${desc}</span>
+                        </li>`;
+                    }).join('');
+                sugestaoSection.innerHTML = `<div style='background:#f3f4f6;border-radius:10px;padding:18px 22px;margin-bottom:10px;box-shadow:0 2px 8px #0001;'>
+                    <h3 style='color:#d84040;font-size:1.2rem;margin-bottom:8px;'>Itens relacionais</h3>
+                    <ul style='margin:0;padding:0;list-style:none;'>${lista}</ul>
+                </div>`;
+                // Adiciona evento aos botões
+                sugestaoSection.querySelectorAll('.btn-adicionar-sugestao').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const codigo = btn.getAttribute('data-codigo');
+                        const descricao = btn.getAttribute('data-descricao');
+                        const preco = btn.getAttribute('data-preco');
+                        adicionarCuboAoCarrinho(codigo, descricao, preco);
+                        renderCarrinhoPage();
+                    });
+                });
+            });
+        } else {
+            sugestaoSection.innerHTML = '';
+        }
+    }
 }
 
 function updateItemQuantity(codigo, novaQtd) {
@@ -530,6 +724,9 @@ function setupPdfButton() {
             const descricao = (item.descricao || "").replace(/\s+/g, " ").trim();
             const codigo = item.codigo || "";
             const qtd = Number(item.qtd) || 1;
+
+        // Chama sugestão de cubos para pesados
+        renderSugestaoPesado(carrinho);
             const preco = Number(item.preco) || 0;
 
             const descLines = doc.splitTextToSize(descricao, descColWidth);
@@ -696,7 +893,20 @@ async function carregarDadosGoogleSheets(nomeAba) {
             if (cells && cells[0] && cells[0].v) {
                 let produto;
                 let precoValor = 0;
-                if (nomeAba === 'tampas') {
+                if (nomeAba === 'passeio' || nomeAba === 'pesado' || nomeAba === 'cubos' || nomeAba === 'variados' || nomeAba === 'tampas') {
+                    console.log('DEBUG cells', nomeAba, i, cells);
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    produto = {
+                        codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
+                        preco: precoValor,
+                        imagem: cells[3]?.v || '',
+                        sugeridoPara: cells[4]?.v || '' // coluna E
+                    };
+                } else if (nomeAba === 'tampas') {
                     // Coluna C (índice 2)
                     if (cells[2] && cells[2].v) {
                         let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
@@ -885,6 +1095,9 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
             produtos.forEach(produto => {
                 const card = document.createElement('div');
                 card.classList.add('item-card');
+                if (produto.sugeridoPara) {
+                    card.dataset.sugeridoPara = produto.sugeridoPara;
+                }
 
                 // Verificar se o produto tem variações de cores
                 const temCores = produto.cores && produto.cores.length > 0;
@@ -908,6 +1121,7 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
                             data-descricao="${produto.descricao}"
                             data-codigo="${produto.codigo}"
                             data-preco="${precoNum}"
+                            data-sugerido-para="${produto.sugeridoPara || ''}"
                             ${coresAttr}>
                             Adicionar
                         </button>

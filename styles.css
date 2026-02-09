@@ -1,76 +1,4 @@
 /* ===========================
-   CONTATO (SEM FORMULÁRIO)
-   =========================== */
-.contato {
-    background: #000;
-    padding: 40px 0 0 0;
-}
-.contato h2,
-.contato h3,
-.contato h4 {
-    color: #fff;
-}
-.contato p {
-    color: #ccc;
-}
-.contato-grid {
-    max-width: 1100px;
-    margin: auto;
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-}
-.contato-info {
-    background: #000000;
-    border-radius: 10px;
-    padding: 35px 50px;
-    color: #fff;
-    flex: 1;
-    min-width: 320px;
-    box-shadow: 0 2px 8px rgba(13, 13, 13, 0.18);
-}
-.contato-info h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-.contato-info h4 {
-    margin-top: 20px;
-    font-size: 18px;
-}
-.btn-ligar, .btn-whatsapp {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: #25D366;
-    color: #fff;
-    text-decoration: none;
-    font-size: 15px;
-    font-weight: bold;
-    border-radius: 999px;
-    transition: 0.3s;
-    width: fit-content;
-    min-width: 120px;
-    margin-top: 10px;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(13, 13, 13, 0.10);
-}
-.btn-ligar {
-    background: #4b4a4a;
-}
-.btn-whatsapp img {
-    width: 22px;
-    height: 22px;
-}
-.btn-whatsapp:hover {
-    background: #02742e;
-}
-.btn-ligar:hover {
-    background: #000000;
-}
-
-
-    /* ===========================
     TOTAL DO CARRINHO
        =========================== */
     .carrinho-total {
@@ -89,110 +17,6 @@
         padding-bottom: 4px;
         margin-bottom: 4px;
     }
-
-/* ===========================
-   SEÇÃO DE NOVIDADES/LANÇAMENTOS
-   =========================== */
-.novidades {
-    max-width: 1500px;
-    position: relative;
-    z-index: 2;
-    margin-left: auto;
-    margin-right: auto;
-    margin-right: auto;
-    margin-left: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-.novidades-titulo {
-    color: #fff;
-    font-size: 2.0em;
-    font-weight: 700;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
-    text-align: center;
-}
-.novidades-banners {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    padding: 10px 0;
-    width: 100%;
-    max-width: 100vw;
-    position: relative;
-}
-.novidade-banner {
-    min-width: 260px;
-    max-width: 300px;
-    width: 220px;
-    height: 390px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #00000000;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
-    margin: 0;
-    overflow: hidden;
-}
-/* Ajuste para deixar imagens e vídeos dos lançamentos mais largos */
-
-/* Permite que imagens e vídeos assumam sua largura natural */
-.novidade-banner img,
-    .novidade-banner video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    border-radius: 0;
-    box-shadow: none;
-    background: #111;
-    transition: transform 0.4s cubic-bezier(.4,1.3,.6,1);
-}
-
-/* Remove restrições do container para não limitar o conteúdo */
-.novidade-banner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: none;
-    box-shadow: none;
-    padding: 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-
-/* Remove barra de rolagem do container principal de novidades, se existir */
-.novidades-banners {
-    overflow-x: hidden !important;
-    overflow-y: hidden !important;
-    /* Para garantir que não apareça barra mesmo se o conteúdo for maior */
-    max-width: 100vw;
-}
-
-@media (max-width: 700px) {
-    .novidade-banner {
-        min-width: 48vw;
-        max-width: 70vw;
-        height: 56vw;
-    }
-}
-.novidade-banner:hover {
-    box-shadow: 0 6px 24px rgba(216,64,64,0.13);
-    transform: translateY(-2px) scale(1.03);
-}
-@media (max-width: 700px) {
-    .novidades {
-        padding: 18px 4vw 10px 4vw;
-    }
-}
 
 /* ===========================
    CONFIGURAÇÃO GERAL
@@ -302,6 +126,10 @@ body.index-page .contato p {
     color: #ccc;
 }
 
+body.index-page .contato-info,
+body.index-page .contato-form {
+    background: #111;
+}
 
 body.index-page footer {
     background: #000;
@@ -421,7 +249,7 @@ header {
 /* HEADER ENCOLHIDO */
 header.shrink {
     padding: 4px 10px;           /* 🔥 deixa mais fino */
-    background: rgba(71, 70, 70, 0.75);
+    background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(6px);
     box-shadow: 0 3px 10px rgba(0,0,0,0.25);
 }
@@ -429,7 +257,7 @@ header.shrink {
 /* HEADER ENCOLHIDO AO ROLAR */
 header.scrolled {
     padding: 4px 10px;           /* 🔥 deixa mais fino */
-    background: rgba(192, 191, 191, 0.274);
+    background: rgba(0, 0, 0, 0.274);
     backdrop-filter: blur(6px);
     box-shadow: 0 3px 10px rgba(0,0,0,0.25);    
 }
@@ -748,6 +576,14 @@ footer {
 }
 
 /* GRID QUE SEPARA INFO E FORMULÁRIO */
+.contato-grid {
+    max-width: 1100px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(320px, 1fr); /* lado a lado */
+    gap: 40px;
+    align-items: start;
+}
 
 /* HERO CATALOGO */
 
@@ -782,10 +618,99 @@ footer {
 }
 
 /* BLOCO DE INFORMAÇÕES */
+.contato-info {
+    text-align: left;
+}
+
+.contato-info h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.contato-info h4 {
+    margin-top: 20px;
+    font-size: 18px;
+}
 
 /* BOTÕES */
+.btn-whatsapp, .btn-ligar, .btn-enviar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px 20px;
+    background: #25D366;
+    color: #fff;
+    text-decoration: none;
+
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-ligar {
+    background: #4b4a4a;
+}
+
+.btn-whatsapp img {
+    width: 30px;
+    height: 30px;
+}
+
+/* HOVERS */
+.btn-whatsapp:hover {
+    background: #02742e;
+}
+.btn-ligar:hover {
+    background: #000000;
+}
+.btn-enviar:hover {
+    background: #02742e;
+}
 
 /* FORMULÁRIO */
+.contato-form {
+    background: rgb(28, 28, 28);
+    padding: 35px 50px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(13, 13, 13, 0.327);
+    text-align: left;
+    color: inherit;
+    border: none;
+    margin-left: 50px;
+}
+
+.contato-form h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.contato-form input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    background: #fff;
+    color: inherit;
+}
+
+.contato-form input#whatsapp,
+.contato-form input[name*="whats" i],
+.contato-form input[placeholder*="whats" i],
+.contato-form input[id*="whats" i] {
+    width: 80%;
+    max-width: 360px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    float: none;
+}
 
 /* ===========================
    CATEGORY SLIDES
@@ -2188,7 +2113,19 @@ body.catalog-page .catalog-wrapper {
         gap: 20px;
     }
     
-
+    .contato-info,
+    .contato-form {
+        padding: 20px;
+    }
+    
+    .contato-info h3 {
+        font-size: 20px;
+    }
+    
+    .contato-form input,
+    .contato-form textarea {
+        font-size: 14px;
+    }
     
     /* Cubos cards mobile */
     .cubos-grid {
@@ -2339,4 +2276,29 @@ body.catalog-page .catalog-wrapper {
         padding: 5px 8px;
         font-size: 10px;
     }
+}
+
+/* Botão verde bonito e leve para sugestão do carrinho */
+.btn-adicionar-sugestao {
+    background: #286d3c;
+    color: #fff;
+    border: none;
+    border-radius: 35px;
+    padding: 6px 18px;
+    font-size: 1em;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.475);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    outline: none;
+    margin: 0 10px 8px 0;
+    display: inline-block; /* importante: não block, para não ocupar toda a linha */
+    text-align: left;
+    min-width: 0;
+    flex-shrink: 0; /* não encolher */
+    z-index: 1;
+}
+
+#sugestao-cubos {
+    text-align: left !important;
 }
