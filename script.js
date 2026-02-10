@@ -342,7 +342,7 @@ function renderSugestaoPesado(carrinho) {
     const sugestaoSection = document.getElementById('sugestao-pesado');
     if (!sugestaoSection) return;
     // Busca todos os produtos pesados no carrinho
-    carregarDadosGoogleSheets('pesado').then(pesados => {
+    carregarDadosGoogleSheets('pesada').then(pesados => {
         // Busca todos os pesados com vínculo (coluna E)
         const pesadosComVinculo = carrinho
             .map(item => pesados.find(p => (p.codigo || '').toLowerCase() === (item.codigo || '').toLowerCase()))
@@ -774,39 +774,26 @@ async function carregarDadosGoogleSheets(nomeAba) {
     if (arguments.length > 1 && arguments[1]) {
         planilhaId = arguments[1];
     }
-    const url = `https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`;
-    
-    console.log(`🔄 Carregando aba "${nomeAba}" da planilha ${planilhaId}`);
-    console.log(`📡 URL: ${url}`);
-    
+    const url = `https://docs.google.com/spreadsheets/d/${planilhaId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nomeAba)}`;
+ 
     try {
         const response = await fetch(url);
-        console.log(`📥 Resposta recebida - Status: ${response.status} ${response.statusText}`);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText} ao carregar planilha "${nomeAba}"`);
-        }
-        
-        const data = await response.json();
-        console.log(`📊 Dados recebidos: ${data.length} linhas da aba "${nomeAba}"`);
-        
-        if (data.length > 0) {
-            console.log(`🔍 Primeira linha (exemplo):`, data[0]);
-            console.log(`📋 Colunas encontradas:`, Object.keys(data[0]));
-        } else {
-            console.warn(`⚠️ Aba "${nomeAba}" retornou 0 linhas. Verifique se há dados na planilha.`);
-        }
+        if (!response.ok) throw new Error(`Erro ao carregar planilha: ${nomeAba}`);
+        const text = await response.text();
+        const jsonText = text.substring(47).slice(0, -2);
+        const data = JSON.parse(jsonText);
+        const rows = data.table.rows;
         
         // Se for aba de lançamentos, processa diferente
         if (nomeAba.toLowerCase() === 'lancamentos') {
             const lancamentos = [];
-            for (let i = 0; i < data.length; i++) {
-                const item = data[i];
-                if (item && item.tipo && item.url) {
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].c;
+                if (cells && cells[0] && cells[0].v && cells[1] && cells[1].v) {
                     lancamentos.push({
-                        tipo: (item.tipo || '').toLowerCase(),
-                        url: item.url || '',
-                        ordem: Number(item.ordem) || i+1
+                        tipo: (cells[0]?.v || '').toLowerCase(),
+                        url: cells[1]?.v || '',
+                        ordem: Number(cells[3]?.v) || i+1
                     });
                 }
             }
@@ -817,81 +804,86 @@ async function carregarDadosGoogleSheets(nomeAba) {
         
         // Catálogo padrão
         const produtos = [];
-        for (let i = 0; i < data.length; i++) {
-            const item = data[i];
-            if (item && (item.codigo || item.Codigo)) {
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].c;
+            if (cells && cells[0] && cells[0].v) {
                 let produto;
                 let precoValor = 0;
                 
-                if (nomeAba === 'passeio' || nomeAba === 'pesado') {
-                    console.log('DEBUG item', nomeAba, i, item);
-                    // Parse price
-                    const precoStr = String(item.preco || item.Preco || '').replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                    precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                if (nomeAba === 'passeio' || nomeAba === 'pesado' || nomeAba === 'cubos' || nomeAba === 'variados' || nomeAba === 'tampas') {
+                    console.log('DEBUG cells', nomeAba, i, cells);
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
                     
                     produto = {
-                        codigo: item.codigo || item.Codigo || '',
-                        descricao: item.descricao || item.Descricao || '',
+                        codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
                         preco: precoValor,
-                        imagem: item.imagem || item.Imagem || '',
-                        sugeridoPara: item.sugeridoPara || item.SugeridoPara || ''
+                        imagem: cells[3]?.v || '',
+                        sugeridoPara: cells[4]?.v || '' // coluna E
                     };
                 } else if (nomeAba === 'tampas') {
-                    // Parse price
-                    const precoStr = String(item.preco || item.Preco || '').replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                    precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
-                    
+                    // Coluna C (índice 2)
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
                     produto = {
-                        codigo: item.codigo || item.Codigo || '',
-                        descricao: item.descricao || item.Descricao || '',
+                        codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
                         preco: precoValor,
                         imagem: ''
                     };
                 } else if (nomeAba === 'cubos') {
-                    // Parse price
-                    const precoStr = String(item.preco || item.Preco || '').replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                    precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
-                    
+                    // Coluna C (índice 2)
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
                     produto = {
-                        codigo: item.codigo || item.Codigo || '',
-                        descricao: item.descricao || item.Descricao || '',
+                       codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
                         preco: precoValor,
-                        imagem: item.imagem || item.Imagem || ''
+                        imagem: cells[3]?.v || ''
                     };
                     if (item.cores || item.Cores) {
                         produto.cores = parsearCores(item.cores || item.Cores);
                     }
-                    if (item.categoria || item.Categoria) {
-                        produto.categoria = item.categoria || item.Categoria;
+                    if (cells[4] && cells[4].v) {
+                        produto.cores = parsearCores(cells[4].v);
                     }
                 } else if (nomeAba === 'variados') {
-                    // Parse price
-                    const precoStr = String(item.preco || item.Preco || '').replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                    precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
-                    
+                    // Coluna D (índice 3)
+                    if (cells[3] && cells[3].v) {
+                        let precoStr = String(cells[3].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
                     produto = {
-                        codigo: item.codigo || item.Codigo || '',
-                        categoria: item.categoria || item.Categoria || '',
-                        descricao: item.descricao || item.Descricao || '',
+                         codigo: cells[0]?.v || '',
+                        categoria: cells[1]?.v || '',
+                        descricao: cells[2]?.v || '',
                         preco: precoValor,
                         imagem: ''
                     };
-                    if (item.cores || item.Cores) {
-                        produto.cores = parsearCores(item.cores || item.Cores);
+                    if (cells[4] && cells[4].v) {
+                        produto.cores = parsearCores(cells[4].v);
                     }
                 } else {
                     // Padrão antigo
-                    const precoStr = String(item.preco || item.Preco || '').replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                    precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
-                    
+                    if (cells[2] && cells[2].v) {
+                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
                     produto = {
-                        codigo: item.codigo || item.Codigo || '',
-                        descricao: item.descricao || item.Descricao || '',
+                        codigo: cells[0]?.v || '',
+                        descricao: cells[1]?.v || '',
                         preco: precoValor,
-                        imagem: item.imagem || item.Imagem || ''
+                        imagem: cells[3]?.v || ''
                     };
-                    if (item.cores || item.Cores) {
-                        produto.cores = parsearCores(item.cores || item.Cores);
+                    if (cells[4] && cells[4].v) {
+                        produto.cores = parsearCores(cells[4].v);
                     }
                 }
                 produtos.push(produto);
@@ -900,9 +892,7 @@ async function carregarDadosGoogleSheets(nomeAba) {
         console.log(`✅ ${produtos.length} produtos carregados do Google Sheets (${nomeAba})`);
         return produtos;
     } catch (error) {
-        console.error(`❌ Erro ao carregar Google Sheets (${nomeAba}):`, error);
-        console.error(`📍 URL tentada: https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`);
-        console.error(`💡 Dica: Verifique se a planilha está publicada e se o nome da aba está correto.`);
+        console.error(`Erro ao carregar Google Sheets (${nomeAba}):`, error);
         throw error;
     }
 }
@@ -913,7 +903,7 @@ async function carregarDadosGoogleSheets(nomeAba) {
 async function carregarCatalogoJSON(arquivoJSON, containerId) {
     const container = document.getElementById(containerId);
     if (!container) {
-        console.warn(`⚠️ Container ${containerId} não encontrado`);
+        console.warn(`Container ${containerId} não encontrado`);
         return;
     }
 
@@ -1091,16 +1081,8 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
         }
 
     } catch (error) {
-        console.error(`❌ Erro ao carregar catálogo (${arquivoJSON}):`, error);
-        container.innerHTML = `
-            <div style="text-align:center;padding:40px;color:#c62828;background:#ffebee;border-radius:8px;margin:20px;">
-                <p style="font-size:18px;font-weight:bold;">⚠️ Erro ao carregar produtos</p>
-                <p style="font-size:14px;margin-top:10px;color:#666;">${error.message}</p>
-                <p style="font-size:12px;margin-top:15px;color:#999;">
-                    Verifique o console do navegador (F12) para mais detalhes.
-                </p>
-            </div>
-        `;
+        console.error(`Erro ao carregar catálogo:`, error);
+        container.innerHTML = '<p>Erro ao carregar produtos. Tente novamente mais tarde.</p>';
     }
 }
 
