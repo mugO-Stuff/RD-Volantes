@@ -755,26 +755,27 @@ async function carregarDadosGoogleSheets(nomeAba) {
     if (arguments.length > 1 && arguments[1]) {
         planilhaId = arguments[1];
     }
-    const url = `https://docs.google.com/spreadsheets/d/${planilhaId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(nomeAba)}`;
+    const url = `https://opensheet.elk.sh/${planilhaId}/${nomeAba}`;
  
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Erro ao carregar planilha: ${nomeAba}`);
-        const text = await response.text();
-        const jsonText = text.substring(47).slice(0, -2);
-        const data = JSON.parse(jsonText);
-        const rows = data.table.rows;
+        const data = await response.json();
         
         // Se for aba de lançamentos, processa diferente
         if (nomeAba.toLowerCase() === 'lancamentos') {
             const lancamentos = [];
-            for (let i = 0; i < rows.length; i++) {
-                const cells = rows[i].c;
-                if (cells && cells[0] && cells[0].v && cells[1] && cells[1].v) {
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                const keys = Object.keys(row);
+                const col0 = row[keys[0]];
+                const col1 = row[keys[1]];
+                if (col0 && col1) {
+                    const col3 = row[keys[3]];
                     lancamentos.push({
-                        tipo: (cells[0]?.v || '').toLowerCase(),
-                        url: cells[1]?.v || '',
-                        ordem: Number(cells[3]?.v) || i+1
+                        tipo: (col0 || '').toLowerCase(),
+                        url: col1 || '',
+                        ordem: Number(col3) || i+1
                     });
                 }
             }
@@ -785,83 +786,93 @@ async function carregarDadosGoogleSheets(nomeAba) {
         
         // Catálogo padrão
         const produtos = [];
-        for (let i = 0; i < rows.length; i++) {
-            const cells = rows[i].c;
-            if (cells && cells[0] && cells[0].v) {
+        for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            const keys = Object.keys(row);
+            const col0 = row[keys[0]];
+            if (col0) {
                 let produto;
                 let precoValor = 0;
                 
                 if (nomeAba === 'passeio' || nomeAba === 'pesado' || nomeAba === 'cubos' || nomeAba === 'variados' || nomeAba === 'tampas') {
-                    console.log('DEBUG cells', nomeAba, i, cells);
-                    if (cells[2] && cells[2].v) {
-                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                    console.log('DEBUG cells', nomeAba, i, row);
+                    const col2 = row[keys[2]];
+                    if (col2) {
+                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
                         precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
                     }
                     
                     produto = {
-                        codigo: cells[0]?.v || '',
-                        descricao: cells[1]?.v || '',
+                        codigo: row[keys[0]] || '',
+                        descricao: row[keys[1]] || '',
                         preco: precoValor,
-                        imagem: cells[3]?.v || '',
-                        sugeridoPara: cells[4]?.v || '' // coluna E
+                        imagem: row[keys[3]] || '',
+                        sugeridoPara: row[keys[4]] || '' // coluna E
                     };
                 } else if (nomeAba === 'tampas') {
                     // Coluna C (índice 2)
-                    if (cells[2] && cells[2].v) {
-                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                    const col2 = row[keys[2]];
+                    if (col2) {
+                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
                         precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
                     }
                     produto = {
-                        codigo: cells[0]?.v || '',
-                        descricao: cells[1]?.v || '',
+                        codigo: row[keys[0]] || '',
+                        descricao: row[keys[1]] || '',
                         preco: precoValor,
                         imagem: ''
                     };
                 } else if (nomeAba === 'cubos') {
                     // Coluna C (índice 2)
-                    if (cells[2] && cells[2].v) {
-                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                    const col2 = row[keys[2]];
+                    if (col2) {
+                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
                         precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
                     }
                     produto = {
-                       codigo: cells[0]?.v || '',
-                        descricao: cells[1]?.v || '',
+                       codigo: row[keys[0]] || '',
+                        descricao: row[keys[1]] || '',
                         preco: precoValor,
-                        imagem: cells[3]?.v || ''
+                        imagem: row[keys[3]] || ''
                     };
-                    if (cells[4] && cells[4].v) {
-                        produto.cores = parsearCores(cells[4].v);
+                    const col4 = row[keys[4]];
+                    if (col4) {
+                        produto.cores = parsearCores(col4);
                     }
                 } else if (nomeAba === 'variados') {
                     // Coluna D (índice 3)
-                    if (cells[3] && cells[3].v) {
-                        let precoStr = String(cells[3].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                    const col3 = row[keys[3]];
+                    if (col3) {
+                        let precoStr = String(col3).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
                         precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
                     }
                     produto = {
-                         codigo: cells[0]?.v || '',
-                        categoria: cells[1]?.v || '',
-                        descricao: cells[2]?.v || '',
+                         codigo: row[keys[0]] || '',
+                        categoria: row[keys[1]] || '',
+                        descricao: row[keys[2]] || '',
                         preco: precoValor,
                         imagem: ''
                     };
-                    if (cells[4] && cells[4].v) {
-                        produto.cores = parsearCores(cells[4].v);
+                    const col4 = row[keys[4]];
+                    if (col4) {
+                        produto.cores = parsearCores(col4);
                     }
                 } else {
                     // Padrão antigo
-                    if (cells[2] && cells[2].v) {
-                        let precoStr = String(cells[2].v).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                    const col2 = row[keys[2]];
+                    if (col2) {
+                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
                         precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
                     }
                     produto = {
-                        codigo: cells[0]?.v || '',
-                        descricao: cells[1]?.v || '',
+                        codigo: row[keys[0]] || '',
+                        descricao: row[keys[1]] || '',
                         preco: precoValor,
-                        imagem: cells[3]?.v || ''
+                        imagem: row[keys[3]] || ''
                     };
-                    if (cells[4] && cells[4].v) {
-                        produto.cores = parsearCores(cells[4].v);
+                    const col4 = row[keys[4]];
+                    if (col4) {
+                        produto.cores = parsearCores(col4);
                     }
                 }
                 produtos.push(produto);
