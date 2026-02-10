@@ -822,10 +822,26 @@ async function carregarDadosGoogleSheets(nomeAba) {
     }
     const url = `https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`;
     
+    console.log(`🔄 Carregando aba "${nomeAba}" da planilha ${planilhaId}`);
+    console.log(`📡 URL: ${url}`);
+    
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`Erro ao carregar planilha: ${nomeAba}`);
+        console.log(`📥 Resposta recebida - Status: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText} ao carregar planilha "${nomeAba}"`);
+        }
+        
         const data = await response.json();
+        console.log(`📊 Dados recebidos: ${data.length} linhas da aba "${nomeAba}"`);
+        
+        if (data.length > 0) {
+            console.log(`🔍 Primeira linha (exemplo):`, data[0]);
+            console.log(`📋 Colunas encontradas:`, Object.keys(data[0]));
+        } else {
+            console.warn(`⚠️ Aba "${nomeAba}" retornou 0 linhas. Verifique se há dados na planilha.`);
+        }
         
         // Se for aba de lançamentos, processa diferente
         if (nomeAba.toLowerCase() === 'lancamentos') {
@@ -930,7 +946,9 @@ async function carregarDadosGoogleSheets(nomeAba) {
         console.log(`✅ ${produtos.length} produtos carregados do Google Sheets (${nomeAba})`);
         return produtos;
     } catch (error) {
-        console.error(`Erro ao carregar Google Sheets (${nomeAba}):`, error);
+        console.error(`❌ Erro ao carregar Google Sheets (${nomeAba}):`, error);
+        console.error(`📍 URL tentada: https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`);
+        console.error(`💡 Dica: Verifique se a planilha está publicada e se o nome da aba está correto.`);
         throw error;
     }
 }
@@ -941,27 +959,40 @@ async function carregarDadosGoogleSheets(nomeAba) {
 async function carregarCatalogoJSON(arquivoJSON, containerId) {
     const container = document.getElementById(containerId);
     if (!container) {
-        console.warn(`Container ${containerId} não encontrado`);
+        console.warn(`⚠️ Container ${containerId} não encontrado`);
         return;
     }
+
+    // Mostra indicador de carregamento
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:#666;"><p style="font-size:18px;">⏳ Carregando produtos...</p></div>';
 
     try {
         let produtos;
         
         // Verifica se deve usar Google Sheets
         if (USAR_GOOGLE_SHEETS && GOOGLE_SHEETS_ID !== 'COLE_SEU_ID_AQUI') {
+            console.log(`📊 Usando Google Sheets para carregar: ${arquivoJSON}`);
             const nomeAba = SHEETS_ABAS[arquivoJSON];
             if (nomeAba) {
                 produtos = await carregarDadosGoogleSheets(nomeAba);
             } else {
+                console.error(`❌ Aba não mapeada para: ${arquivoJSON}`);
+                console.log(`📋 Abas mapeadas disponíveis:`, SHEETS_ABAS);
                 throw new Error(`Aba não mapeada para: ${arquivoJSON}`);
             }
         } else {
+            console.log(`📁 Usando JSON local: ${arquivoJSON}`);
             // Fallback: carrega do arquivo JSON local
             const response = await fetch(arquivoJSON);
             if (!response.ok) throw new Error(`Erro ao carregar ${arquivoJSON}`);
             produtos = await response.json();
             console.log(`✅ ${produtos.length} produtos carregados de ${arquivoJSON} (JSON local)`);
+        }
+
+        if (!produtos || produtos.length === 0) {
+            container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;"><p style="font-size:18px;">📭 Nenhum produto encontrado.</p><p style="font-size:14px;margin-top:10px;">Verifique se há dados na planilha.</p></div>';
+            console.warn(`⚠️ Nenhum produto retornado para ${arquivoJSON}`);
+            return;
         }
 
         container.innerHTML = '';
@@ -1106,8 +1137,16 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
         }
 
     } catch (error) {
-        console.error(`Erro ao carregar catálogo:`, error);
-        container.innerHTML = '<p>Erro ao carregar produtos. Tente novamente mais tarde.</p>';
+        console.error(`❌ Erro ao carregar catálogo (${arquivoJSON}):`, error);
+        container.innerHTML = `
+            <div style="text-align:center;padding:40px;color:#c62828;background:#ffebee;border-radius:8px;margin:20px;">
+                <p style="font-size:18px;font-weight:bold;">⚠️ Erro ao carregar produtos</p>
+                <p style="font-size:14px;margin-top:10px;color:#666;">${error.message}</p>
+                <p style="font-size:12px;margin-top:15px;color:#999;">
+                    Verifique o console do navegador (F12) para mais detalhes.
+                </p>
+            </div>
+        `;
     }
 }
 

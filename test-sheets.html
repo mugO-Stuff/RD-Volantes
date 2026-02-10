@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Google Sheets - OpenSheet API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+        .success {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            color: #2e7d32;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .loading {
+            color: #1976d2;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de Carregamento Google Sheets via OpenSheet API</h1>
+    
+    <div class="test-section">
+        <h2>Configuração</h2>
+        <p><strong>ID Planilha Principal:</strong> <code>1hlkmU8txN3b_CGw1OKJVeNaqUAaOZ4tGQsdM3J4QYok</code></p>
+        <p><strong>ID Planilha Lançamentos:</strong> <code>1xo_PUXRnlkT_VCYu0e0tndl3P4NaCvAJSV8qz61ng2E</code></p>
+    </div>
+
+    <div class="test-section">
+        <h2>Testar Abas da Planilha Principal</h2>
+        <button onclick="testarAba('passeio')">Testar 'passeio'</button>
+        <button onclick="testarAba('pesado')">Testar 'pesado'</button>
+        <button onclick="testarAba('cubos')">Testar 'cubos'</button>
+        <button onclick="testarAba('coloridos')">Testar 'coloridos'</button>
+        <button onclick="testarAba('variados')">Testar 'variados'</button>
+        <button onclick="testarAba('tampas')">Testar 'tampas'</button>
+        <div id="result-main" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Testar Planilha de Lançamentos</h2>
+        <button onclick="testarLancamentos()">Testar 'lancamentos'</button>
+        <div id="result-lancamentos" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        const PLANILHA_PRINCIPAL = '1hlkmU8txN3b_CGw1OKJVeNaqUAaOZ4tGQsdM3J4QYok';
+        const PLANILHA_LANCAMENTOS = '1xo_PUXRnlkT_VCYu0e0tndl3P4NaCvAJSV8qz61ng2E';
+
+        async function testarAba(nomeAba) {
+            const resultDiv = document.getElementById('result-main');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.innerHTML = `<p class="loading">⏳ Carregando aba "${nomeAba}"...</p>`;
+
+            const url = `https://opensheet.elk.sh/${PLANILHA_PRINCIPAL}/${encodeURIComponent(nomeAba)}`;
+            
+            try {
+                console.log(`Testando URL: ${url}`);
+                const inicio = Date.now();
+                const response = await fetch(url);
+                const tempo = Date.now() - inicio;
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log(`Dados recebidos (${nomeAba}):`, data);
+                
+                resultDiv.className = 'result success';
+                let html = `<p class="success">✅ Sucesso! ${data.length} linhas carregadas em ${tempo}ms</p>`;
+                html += `<p><strong>URL:</strong> <code>${url}</code></p>`;
+                
+                if (data.length > 0) {
+                    html += '<h3>Primeira linha (exemplo):</h3>';
+                    html += '<pre>' + JSON.stringify(data[0], null, 2) + '</pre>';
+                    
+                    html += '<h3>Nomes das colunas encontradas:</h3>';
+                    const colunas = Object.keys(data[0]);
+                    html += '<ul>' + colunas.map(col => `<li><code>${col}</code></li>`).join('') + '</ul>';
+                    
+                    if (data.length <= 10) {
+                        html += '<h3>Todas as linhas:</h3>';
+                        html += '<table><thead><tr>';
+                        colunas.forEach(col => html += `<th>${col}</th>`);
+                        html += '</tr></thead><tbody>';
+                        data.forEach(row => {
+                            html += '<tr>';
+                            colunas.forEach(col => html += `<td>${row[col] || ''}</td>`);
+                            html += '</tr>';
+                        });
+                        html += '</tbody></table>';
+                    } else {
+                        html += `<p><em>Exibindo apenas primeira linha. Total: ${data.length} linhas.</em></p>`;
+                    }
+                } else {
+                    html += '<p>⚠️ Nenhuma linha retornada. A aba pode estar vazia.</p>';
+                }
+                
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                console.error(`Erro ao testar ${nomeAba}:`, error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Erro ao carregar aba "${nomeAba}"</p>
+                    <p><strong>URL:</strong> <code>${url}</code></p>
+                    <p><strong>Erro:</strong> ${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+
+        async function testarLancamentos() {
+            const resultDiv = document.getElementById('result-lancamentos');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result loading';
+            resultDiv.innerHTML = `<p class="loading">⏳ Carregando aba "lancamentos"...</p>`;
+
+            const url = `https://opensheet.elk.sh/${PLANILHA_LANCAMENTOS}/lancamentos`;
+            
+            try {
+                console.log(`Testando URL: ${url}`);
+                const inicio = Date.now();
+                const response = await fetch(url);
+                const tempo = Date.now() - inicio;
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Dados de lançamentos:', data);
+                
+                resultDiv.className = 'result success';
+                let html = `<p class="success">✅ Sucesso! ${data.length} linhas carregadas em ${tempo}ms</p>`;
+                html += `<p><strong>URL:</strong> <code>${url}</code></p>`;
+                
+                if (data.length > 0) {
+                    html += '<h3>Primeira linha (exemplo):</h3>';
+                    html += '<pre>' + JSON.stringify(data[0], null, 2) + '</pre>';
+                    
+                    html += '<h3>Nomes das colunas encontradas:</h3>';
+                    const colunas = Object.keys(data[0]);
+                    html += '<ul>' + colunas.map(col => `<li><code>${col}</code></li>`).join('') + '</ul>';
+                    
+                    html += '<h3>Todas as linhas:</h3>';
+                    html += '<table><thead><tr>';
+                    colunas.forEach(col => html += `<th>${col}</th>`);
+                    html += '</tr></thead><tbody>';
+                    data.forEach(row => {
+                        html += '<tr>';
+                        colunas.forEach(col => html += `<td>${row[col] || ''}</td>`);
+                        html += '</tr>';
+                    });
+                    html += '</tbody></table>';
+                } else {
+                    html += '<p>⚠️ Nenhuma linha retornada. A aba pode estar vazia.</p>';
+                }
+                
+                resultDiv.innerHTML = html;
+            } catch (error) {
+                console.error('Erro ao testar lancamentos:', error);
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Erro ao carregar aba "lancamentos"</p>
+                    <p><strong>URL:</strong> <code>${url}</code></p>
+                    <p><strong>Erro:</strong> ${error.message}</p>
+                    <pre>${error.stack}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
