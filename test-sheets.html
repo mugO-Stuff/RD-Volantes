@@ -83,8 +83,8 @@
     
     <div class="test-section">
         <h2>Configuração</h2>
-        <p><strong>ID Planilha Principal:</strong> <code>1hlkmU8txN3b_CGw1OKJVeNaqUAaOZ4tGQsdM3J4QYok</code></p>
-        <p><strong>ID Planilha Lançamentos:</strong> <code>1xo_PUXRnlkT_VCYu0e0tndl3P4NaCvAJSV8qz61ng2E</code></p>
+        <p><strong>ID Planilha Principal:</strong> <code id="id-principal"></code></p>
+        <p><strong>ID Planilha Lançamentos:</strong> <code id="id-lancamentos"></code></p>
     </div>
 
     <div class="test-section">
@@ -107,6 +107,12 @@
     <script>
         const PLANILHA_PRINCIPAL = '1hlkmU8txN3b_CGw1OKJVeNaqUAaOZ4tGQsdM3J4QYok';
         const PLANILHA_LANCAMENTOS = '1xo_PUXRnlkT_VCYu0e0tndl3P4NaCvAJSV8qz61ng2E';
+
+        // Preenche os IDs na página
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('id-principal').textContent = PLANILHA_PRINCIPAL;
+            document.getElementById('id-lancamentos').textContent = PLANILHA_LANCAMENTOS;
+        });
 
         async function testarAba(nomeAba) {
             const resultDiv = document.getElementById('result-main');
