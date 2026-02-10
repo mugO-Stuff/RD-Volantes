@@ -49,7 +49,6 @@ function carregarProdutos() {
             <p class="descricao">${prod.descricao}</p>
             <!-- Preço removido -->
             <button class="btn-add-carrinho" 
-                    data-id="${prod.id}"
                     data-codigo="${prod.id}"
                     data-descricao="${prod.nome}"
                     data-preco="${prod.preco}">Adicionar ao Carrinho</button>
