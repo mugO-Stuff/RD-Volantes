@@ -35,6 +35,8 @@ const produtos = [
 // ===========================================================
 function carregarProdutos() {
     const catalogo = document.getElementById("catalogo");
+    if (!catalogo) return;
+    
     catalogo.innerHTML = "";
 
     produtos.forEach(prod => {
@@ -43,22 +45,15 @@ function carregarProdutos() {
 
         item.innerHTML = `
             <img src="${prod.imagem}" alt="${prod.nome}">
-            <h3>${prod.nome}</h3>
-            <p>${prod.descricao}</p>
+            <h3 class="titulo">${prod.nome}</h3>
+            <p class="descricao">${prod.descricao}</p>
             <!-- Preço removido -->
-            <button onclick="adicionarAoCarrinho(${prod.id})">Adicionar ao Carrinho</button>
+            <button class="btn-add-carrinho" 
+                    data-codigo="${prod.id}"
+                    data-descricao="${prod.nome}"
+                    data-preco="${prod.preco}">Adicionar ao Carrinho</button>
         `;
 
-        // Adiciona evento de clique igual cubos
-        const btn = item.querySelector('.btn-add-carrinho');
-        btn.onclick = function() {
-            window._lastCuboBtnClicked = btn;
-            adicionarAoCarrinhoDirecto(item, btn);
-            btn.classList.add('animado');
-            setTimeout(() => {
-                btn.classList.remove('animado');
-            }, 400);
-        };
         catalogo.appendChild(item);
     });
 }
@@ -638,9 +633,6 @@ function setupPdfButton() {
             const descricao = (item.descricao || "").replace(/\s+/g, " ").trim();
             const codigo = item.codigo || "";
             const qtd = Number(item.qtd) || 1;
-
-        // Chama sugestão de cubos para pesados
-        renderSugestaoPesado(carrinho);
             const preco = Number(item.preco) || 0;
 
             const descLines = doc.splitTextToSize(descricao, descColWidth);
