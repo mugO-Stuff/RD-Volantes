@@ -45,10 +45,14 @@ function carregarProdutos() {
 
         item.innerHTML = `
             <img src="${prod.imagem}" alt="${prod.nome}">
-            <h3>${prod.nome}</h3>
-            <p>${prod.descricao}</p>
+            <h3 class="titulo">${prod.nome}</h3>
+            <p class="descricao">${prod.descricao}</p>
             <!-- Preço removido -->
-            <button class="btn-add-carrinho" data-id="${prod.id}">Adicionar ao Carrinho</button>
+            <button class="btn-add-carrinho" 
+                    data-id="${prod.id}"
+                    data-codigo="${prod.id}"
+                    data-descricao="${prod.nome}"
+                    data-preco="${prod.preco}">Adicionar ao Carrinho</button>
         `;
 
         catalogo.appendChild(item);
