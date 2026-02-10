@@ -755,7 +755,7 @@ async function carregarDadosGoogleSheets(nomeAba) {
     if (arguments.length > 1 && arguments[1]) {
         planilhaId = arguments[1];
     }
-    const url = `https://opensheet.elk.sh/${planilhaId}/${nomeAba}`;
+    const url = `https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`;
  
     try {
         const response = await fetch(url);
@@ -794,52 +794,7 @@ async function carregarDadosGoogleSheets(nomeAba) {
                 let produto;
                 let precoValor = 0;
                 
-                if (nomeAba === 'passeio' || nomeAba === 'pesado' || nomeAba === 'cubos' || nomeAba === 'variados' || nomeAba === 'tampas') {
-                    console.log('DEBUG cells', nomeAba, i, row);
-                    const col2 = row[keys[2]];
-                    if (col2) {
-                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
-                    }
-                    
-                    produto = {
-                        codigo: row[keys[0]] || '',
-                        descricao: row[keys[1]] || '',
-                        preco: precoValor,
-                        imagem: row[keys[3]] || '',
-                        sugeridoPara: row[keys[4]] || '' // coluna E
-                    };
-                } else if (nomeAba === 'tampas') {
-                    // Coluna C (índice 2)
-                    const col2 = row[keys[2]];
-                    if (col2) {
-                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
-                    }
-                    produto = {
-                        codigo: row[keys[0]] || '',
-                        descricao: row[keys[1]] || '',
-                        preco: precoValor,
-                        imagem: ''
-                    };
-                } else if (nomeAba === 'cubos') {
-                    // Coluna C (índice 2)
-                    const col2 = row[keys[2]];
-                    if (col2) {
-                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
-                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
-                    }
-                    produto = {
-                       codigo: row[keys[0]] || '',
-                        descricao: row[keys[1]] || '',
-                        preco: precoValor,
-                        imagem: row[keys[3]] || ''
-                    };
-                    const col4 = row[keys[4]];
-                    if (col4) {
-                        produto.cores = parsearCores(col4);
-                    }
-                } else if (nomeAba === 'variados') {
+                if (nomeAba === 'variados') {
                     // Coluna D (índice 3)
                     const col3 = row[keys[3]];
                     if (col3) {
@@ -857,6 +812,51 @@ async function carregarDadosGoogleSheets(nomeAba) {
                     if (col4) {
                         produto.cores = parsearCores(col4);
                     }
+                } else if (nomeAba === 'cubos') {
+                    // Coluna C (índice 2)
+                    const col2 = row[keys[2]];
+                    if (col2) {
+                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    produto = {
+                       codigo: row[keys[0]] || '',
+                        descricao: row[keys[1]] || '',
+                        preco: precoValor,
+                        imagem: row[keys[3]] || ''
+                    };
+                    const col4 = row[keys[4]];
+                    if (col4) {
+                        produto.cores = parsearCores(col4);
+                    }
+                } else if (nomeAba === 'tampas') {
+                    // Coluna C (índice 2)
+                    const col2 = row[keys[2]];
+                    if (col2) {
+                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    produto = {
+                        codigo: row[keys[0]] || '',
+                        descricao: row[keys[1]] || '',
+                        preco: precoValor,
+                        imagem: ''
+                    };
+                } else if (nomeAba === 'passeio' || nomeAba === 'pesado') {
+                    console.log('DEBUG cells', nomeAba, i, row);
+                    const col2 = row[keys[2]];
+                    if (col2) {
+                        let precoStr = String(col2).replace(/R\$/gi, '').replace(/\s/g, '').replace(',', '.');
+                        precoValor = (!isNaN(parseFloat(precoStr)) && isFinite(precoStr) && precoStr !== '') ? parseFloat(precoStr) : 0;
+                    }
+                    
+                    produto = {
+                        codigo: row[keys[0]] || '',
+                        descricao: row[keys[1]] || '',
+                        preco: precoValor,
+                        imagem: row[keys[3]] || '',
+                        sugeridoPara: row[keys[4]] || '' // coluna E
+                    };
                 } else {
                     // Padrão antigo
                     const col2 = row[keys[2]];
