@@ -569,19 +569,14 @@ function setupPdfButton() {
             return;
         }
 
-        // Verificação de valor mínimo
-        const total = carrinho.reduce((s, it) => s + ((Number(it.preco) || 0) * (Number(it.qtd) || 0)), 0);
-        if (total < 2000) {
-            alert("Pedido mínimo para orçamento: R$ 2.000,00. Adicione mais itens ao carrinho para gerar o PDF.");
-            return;
-        }
+        // Verificação de valor mínimo removida conforme solicitação
+        // O sistema agora permite orçamentos de qualquer valor, sem restrição mínima de R$ 2.000,00
 
         const doc = new window.jspdf.jsPDF();
 
         const marginLeft = 14;
         const colDesc = 70;
         const colQtd = 140;
-        const colPreco = 170;
         let y = 18;
 
         doc.setFont("helvetica", "bold");
@@ -621,7 +616,6 @@ function setupPdfButton() {
         doc.text("Código", marginLeft, y);
         doc.text("Descrição", colDesc, y);
         doc.text("Qtd", colQtd, y);
-        doc.text("Preço", colPreco, y);
         y += 6;
         doc.setFont("courier", "normal");
 
@@ -633,7 +627,6 @@ function setupPdfButton() {
             const descricao = (item.descricao || "").replace(/\s+/g, " ").trim();
             const codigo = item.codigo || "";
             const qtd = Number(item.qtd) || 1;
-            const preco = Number(item.preco) || 0;
 
             const descLines = doc.splitTextToSize(descricao, descColWidth);
             if (y + descLines.length * lineHeight > 277) {
@@ -644,14 +637,10 @@ function setupPdfButton() {
             doc.text(codigo, marginLeft, y);
             doc.text(descLines, colDesc, y);
             doc.text(String(qtd), colQtd, y);
-            doc.text(`R$ ${preco.toFixed(2)}`, colPreco, y);
 
             y += descLines.length * lineHeight;
             y += 2;
         }
-
-        doc.setFontSize(12);
-        doc.text(`Total: R$ ${total.toFixed(2)}`, marginLeft, y + 8);
 
         // Gera nome do arquivo com data atual DD-MM-AA
         const hoje = new Date();
@@ -1254,13 +1243,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     const tituloProdutos = 'ITENS DO CARRINHO';
 
                     // Cabeçalhos CSV em caixa alta
-                    const header = ['CÓDIGO', 'DESCRIÇÃO', 'QUANTIDADE', 'PREÇO'];
+                    const header = ['CÓDIGO', 'DESCRIÇÃO', 'QUANTIDADE'];
                     // Corrige acentuação para UTF-8
                     const rows = carrinho.map(item => [
                         '"' + (item.codigo || '').replace(/"/g, '""') + '"',
                         '"' + (item.descricao || '').replace(/"/g, '""') + '"',
-                        item.qtd || 1,
-                        (Number(item.preco) || 0).toFixed(2).replace('.', ',')
+                        item.qtd || 1
                     ]);
 
                     let csv = '\uFEFF'; // BOM para Excel
@@ -1384,18 +1372,12 @@ function setupBotaoOrcamentoWhatsApp() {
         
         // Monta lista de itens
         let listaItens = carrinho.map(item => {
-            const preco = item.preco > 0 ? ` - R$ ${Number(item.preco).toFixed(2)}` : ' - Sob consulta';
-            return `• ${item.qtd}x ${item.codigo} - ${item.descricao}${preco}`;
+            return `• ${item.qtd}x ${item.codigo} - ${item.descricao}`;
         }).join('%0A');
-        
-        // Calcula total
-        const total = carrinho.reduce((acc, item) => acc + (Number(item.preco) || 0) * (Number(item.qtd) || 1), 0);
-        const totalTexto = total > 0 ? `R$ ${total.toFixed(2)}` : 'Sob consulta';
         
         const mensagem = `*Orçamento RD Volantes*%0A%0A` +
                         `*Cliente:* ${nomeCliente}%0A%0A` +
                         `*Itens do Pedido:*%0A${listaItens}%0A%0A` +
-                        `*Total:* ${totalTexto}%0A%0A` +
                         `Aguardo retorno!`;
         
         const telefone = '5512997271120';
