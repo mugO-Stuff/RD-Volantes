@@ -1,54 +1,8 @@
 console.log('Script carregado!');
 const GOOGLE_SHEETS_ID = '1hlkmU8txN3b_CGw1OKJVeNaqUAaOZ4tGQsdM3J4QYok';
 const GOOGLE_SHEETS_ID_LANCAMENTOS = '1xo_PUXRnlkT_VCYu0e0tndl3P4NaCvAJSV8qz61ng2E';
-// =============================
-// CARREGAR LANÇAMENTOS (STORIES) DA PLANILHA
-// =============================
-async function carregarLancamentos() {
-    const container = document.querySelector('.novidades-banners');
-    if (!container) {
-        console.warn('Container .novidades-banners não encontrado!');
-        return;
-    }
-    try {
-        console.log('🔄 Buscando lançamentos do Google Sheets...');
-        const dados = await carregarDadosGoogleSheets('lancamentos', GOOGLE_SHEETS_ID_LANCAMENTOS);
-        console.log('Lançamentos carregados:', dados);
-        container.innerHTML = '';
-        if (!dados || !dados.length) {
-            container.innerHTML = '<p style="color:#fff;text-align:center">Nenhum lançamento encontrado.</p>';
-            console.warn('Nenhum lançamento encontrado na planilha.');
-            return;
-        }
-        dados.forEach(item => {
-            let el;
-            const tipo = (item.tipo || '').toLowerCase();
-            if (tipo === 'vimeo' || (item.url || '').includes('player.vimeo.com')) {
-                el = document.createElement('div');
-                el.className = 'novidade-banner';
-                el.innerHTML = `<iframe src="${item.url}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="width:100%;height:100%;border-radius:12px;"></iframe>`;
-            } else if (tipo === 'video') {
-                el = document.createElement('div');
-                el.className = 'novidade-banner';
-                el.innerHTML = `<video src="${item.url}" controls autoplay muted playsinline poster="${item.poster || ''}"></video>`;
-            } else {
-                el = document.createElement('div');
-                el.className = 'novidade-banner';
-                el.innerHTML = `<img src="${item.url}" alt="Lançamento">`;
-            }
-            container.appendChild(el);
-        });
-    } catch (e) {
-        console.error('Erro ao carregar lançamentos:', e);
-        container.innerHTML = '<p style="color:#fff;text-align:center">Não foi possível carregar os lançamentos.</p>';
-    }
-}
-// Chama o carregamento dos lançamentos apenas no index
-// Garante que carregarLancamentos sempre é chamado na index
-if (document.body.classList.contains('index-page')) {
-    console.log('Chamando carregarLancamentos() na index-page');
-    carregarLancamentos();
-}
+
+
 // =============================
 // LISTA DE PRODUTOS (APENAS AQUI)
 // =============================
