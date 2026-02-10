@@ -569,7 +569,8 @@ function setupPdfButton() {
             return;
         }
 
-        // Verificação de valor mínimo removida - permite qualquer valor
+        // Verificação de valor mínimo removida conforme solicitação
+        // O sistema agora permite orçamentos de qualquer valor, sem restrição mínima de R$ 2.000,00
 
         const doc = new window.jspdf.jsPDF();
 
