@@ -848,9 +848,6 @@ async function carregarDadosGoogleSheets(nomeAba) {
                         preco: precoValor,
                         imagem: cells[3]?.v || ''
                     };
-                    if (item.cores || item.Cores) {
-                        produto.cores = parsearCores(item.cores || item.Cores);
-                    }
                     if (cells[4] && cells[4].v) {
                         produto.cores = parsearCores(cells[4].v);
                     }
@@ -907,36 +904,23 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
         return;
     }
 
-    // Mostra indicador de carregamento
-    container.innerHTML = '<div style="text-align:center;padding:40px;color:#666;"><p style="font-size:18px;">⏳ Carregando produtos...</p></div>';
-
     try {
         let produtos;
         
         // Verifica se deve usar Google Sheets
         if (USAR_GOOGLE_SHEETS && GOOGLE_SHEETS_ID !== 'COLE_SEU_ID_AQUI') {
-            console.log(`📊 Usando Google Sheets para carregar: ${arquivoJSON}`);
             const nomeAba = SHEETS_ABAS[arquivoJSON];
             if (nomeAba) {
                 produtos = await carregarDadosGoogleSheets(nomeAba);
             } else {
-                console.error(`❌ Aba não mapeada para: ${arquivoJSON}`);
-                console.log(`📋 Abas mapeadas disponíveis:`, SHEETS_ABAS);
                 throw new Error(`Aba não mapeada para: ${arquivoJSON}`);
             }
         } else {
-            console.log(`📁 Usando JSON local: ${arquivoJSON}`);
             // Fallback: carrega do arquivo JSON local
             const response = await fetch(arquivoJSON);
             if (!response.ok) throw new Error(`Erro ao carregar ${arquivoJSON}`);
             produtos = await response.json();
             console.log(`✅ ${produtos.length} produtos carregados de ${arquivoJSON} (JSON local)`);
-        }
-
-        if (!produtos || produtos.length === 0) {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;"><p style="font-size:18px;">📭 Nenhum produto encontrado.</p><p style="font-size:14px;margin-top:10px;">Verifique se há dados na planilha.</p></div>';
-            console.warn(`⚠️ Nenhum produto retornado para ${arquivoJSON}`);
-            return;
         }
 
         container.innerHTML = '';
