@@ -1171,6 +1171,19 @@ function inicializarCatalogo() {
         carregarCatalogoJSON('catalogo-outros.json', 'catalogo-outros');
         return;
     }
+    // Página de pesado: carregar catálogo de pesado no container correto
+    if (filename === 'psdpass.html' && document.getElementById('catalogo-pesado')) {
+        carregarCatalogoJSON('catalogo-pesado.json', 'catalogo-pesado');
+        return;
+    }
+    // Se não existir elemento com id 'catalogo-pesado', tentar com classe
+    if (filename === 'psdpass.html') {
+        const catalogoElement = document.querySelector('.catalogo');
+        if (catalogoElement) {
+            carregarCatalogoJSON('catalogo-pesado.json', catalogoElement.id || 'catalogo-container');
+            return;
+        }
+    }
     // Demais páginas: comportamento padrão único
     const catalogoContainer = document.querySelector('.catalogo');
     if (arquivoJSON && catalogoContainer) {
