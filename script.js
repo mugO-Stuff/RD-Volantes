@@ -755,48 +755,12 @@ async function carregarDadosGoogleSheets(nomeAba) {
     if (arguments.length > 1 && arguments[1]) {
         planilhaId = arguments[1];
     }
-    const url = `https://docs.google.com/spreadsheets/d/${planilhaId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(nomeAba)}`;
+    const url = `https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`;
  
     try {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Erro ao carregar planilha: ${nomeAba}`);
-        const text = await response.text();
-        
-        // Parse CSV considerando células com vírgulas entre aspas
-        function parseCSVLine(line) {
-            const cells = [];
-            let currentCell = '';
-            let insideQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                const nextChar = line[i + 1];
-                
-                if (char === '"') {
-                    if (insideQuotes && nextChar === '"') {
-                        currentCell += '"';
-                        i++;
-                    } else {
-                        insideQuotes = !insideQuotes;
-                    }
-                } else if (char === ',' && !insideQuotes) {
-                    cells.push(currentCell);
-                    currentCell = '';
-                } else {
-                    currentCell += char;
-                }
-            }
-            cells.push(currentCell);
-            return cells;
-        }
-        
-        const rows = text.split(/\r?\n/).map(line => parseCSVLine(line));
-        const headers = rows[0];
-        const data = rows.slice(1).filter(row => row.some(cell => cell.trim())).map(row => {
-            const obj = {};
-            headers.forEach((header, i) => obj[header] = row[i] || '');
-            return obj;
-        });
+        const data = await response.json();
         
         // Se for aba de lançamentos, processa diferente
         if (nomeAba.toLowerCase() === 'lancamentos') {
