@@ -1312,31 +1312,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setupPdfButton();
     inicializarCatalogo(); // Carrega o catálogo via JSON
 
-    // Corrige o clique do menu lateral "Variados" na categoria passeio
+    // Passeio sempre mostra o catálogo padrão e deixa "Passeio" ativo - Handler movido para baixo (após linha 1359)
     if (window.location.pathname.includes('categoria-passeio.html')) {
-        const variadoSidebar = document.querySelector('.category-list .category-btn[href="#catalogo-coloridos"]');
         const passeioSidebar = document.querySelector('.category-list .category-btn[href="categoria-passeio.html"]');
-        if (variadoSidebar) {
-            variadoSidebar.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Garante que sempre mostra a aba Variados na primeira tentativa
-                const padrao = document.getElementById('catalogo-padrao');
-                const coloridos = document.getElementById('catalogo-coloridos');
-                if (padrao && coloridos) {
-                    padrao.style.display = 'none';
-                    padrao.hidden = true;
-                    coloridos.style.display = 'grid';
-                    coloridos.hidden = false;
-                    if (!coloridos.dataset.carregado) {
-                        carregarCatalogoJSON('passeio-coloridos.json', 'catalogo-coloridos').then(() => {
-                            coloridos.dataset.carregado = 'true';
-                        });
-                    }
-                }
-                document.querySelectorAll('.category-list .category-btn').forEach(btn => btn.classList.remove('active'));
-                variadoSidebar.classList.add('active');
-            });
-        }
         // Passeio sempre mostra o catálogo padrão e deixa "Passeio" ativo
         if (passeioSidebar) {
             passeioSidebar.addEventListener('click', function(e) {
@@ -1356,6 +1334,68 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         }
+    }
+
+    // ========================================
+    // HANDLER PARA "UNIVERSAL" NO MENU PRINCIPAL
+    // ========================================
+    if (window.location.pathname.includes('categoria-passeio.html')) {
+        // Aguarda 100ms para garantir que DOM está pronto
+        setTimeout(() => {
+            // Localiza o botão "universal" no menu principal (sidebar)
+            const universalBtn = document.querySelector('.category-list .category-btn[href="#catalogo-coloridos"]');
+            
+            if (universalBtn) {
+                universalBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    
+                    console.log('🎯 Clique em UNIVERSAL detectado');
+                    
+                    // Pega os containers
+                    const padrao = document.getElementById('catalogo-padrao');
+                    const coloridos = document.getElementById('catalogo-coloridos');
+                    
+                    if (!padrao || !coloridos) {
+                        console.error('❌ Containers não encontrados');
+                        return;
+                    }
+                    
+                    // Esconde padrão
+                    padrao.style.display = 'none';
+                    padrao.hidden = true;
+                    
+                    // Mostra coloridos
+                    coloridos.style.display = 'grid';
+                    coloridos.hidden = false;
+                    
+                    console.log('✅ Containers alternados');
+                    
+                    // Carrega dados apenas na primeira vez (lazy load)
+                    if (!coloridos.dataset.carregado) {
+                        console.log('📦 Carregando dados de coloridos...');
+                        
+                        try {
+                            // Usa a mesma função que já existe no código
+                            await carregarCatalogoJSON('passeio-coloridos.json', 'catalogo-coloridos');
+                            coloridos.dataset.carregado = 'true';
+                            console.log('✅ Dados carregados e renderizados');
+                        } catch (err) {
+                            console.error('❌ Erro ao carregar coloridos:', err);
+                        }
+                    }
+                    
+                    // Atualiza botão ativo no menu
+                    document.querySelectorAll('.category-list .category-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    universalBtn.classList.add('active');
+                });
+                
+                console.log('✅ Handler UNIVERSAL instalado');
+            } else {
+                console.warn('⚠️ Botão universal não encontrado no menu');
+            }
+        }, 100);
     }
 
     if (document.getElementById("listaCarrinho") || document.getElementById("carrinho-itens")) {
