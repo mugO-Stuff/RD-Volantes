@@ -695,7 +695,7 @@ function setupIntroVideo() {
 // Mapeamento: nome do catálogo → nome da aba na planilha
 const SHEETS_ABAS = {
     'catalogo-passeio.json': 'passeio',
-    'catalogo-pesado.json': 'pesado',
+    'catalogo-pesado.json': 'pesada',
     'catalogo-cubos.json': 'cubos',
     'passeio-coloridos.json': 'coloridos',
     'catalogo-outros.json': 'variados',
@@ -842,7 +842,7 @@ async function carregarDadosGoogleSheets(nomeAba) {
                         preco: precoValor,
                         imagem: ''
                     };
-                } else if (nomeAba === 'passeio' || nomeAba === 'pesado') {
+                } else if (nomeAba === 'passeio' || nomeAba === 'pesada') {
                     console.log('DEBUG cells', nomeAba, i, row);
                     const col2 = row[keys[2]];
                     if (col2) {
@@ -1162,7 +1162,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             clearTimeout(timeoutPesquisaCat);
                             timeoutPesquisaCat = setTimeout(async () => {
                                 resultadoPesquisaCatalogo.innerHTML = '<div style="color:#888;font-size:13px;">Buscando...</div>';
-                                const abas = ['passeio', 'pesado', 'cubos', 'tampas', 'outros'];
+                                const abas = ['passeio', 'pesada', 'cubos', 'tampas', 'outros'];
                                 let resultados = [];
                                 for (const aba of abas) {
                                     try {
@@ -1204,7 +1204,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         clearTimeout(timeoutPesquisa);
                         timeoutPesquisa = setTimeout(async () => {
                             resultadoPesquisaGlobal.innerHTML = '<div style="color:#888;font-size:13px;">Buscando...</div>';
-                            const abas = ['passeio', 'pesado', 'cubos', 'tampas', 'outros'];
+                            const abas = ['passeio', 'pesada', 'cubos', 'tampas', 'outros'];
                             let resultados = [];
                             for (const aba of abas) {
                                 try {
