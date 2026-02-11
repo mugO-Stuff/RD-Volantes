@@ -1348,6 +1348,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (universalBtn) {
                 universalBtn.addEventListener('click', async function(e) {
                     e.preventDefault();
+                    e.stopPropagation();
                     
                     console.log('🎯 Clique em UNIVERSAL detectado');
                     
@@ -1375,8 +1376,65 @@ document.addEventListener("DOMContentLoaded", () => {
                         console.log('📦 Carregando dados de coloridos...');
                         
                         try {
-                            // Usa a mesma função que já existe no código
-                            await carregarCatalogoJSON('passeio-coloridos.json', 'catalogo-coloridos');
+                            // Carrega dados diretamente do Google Sheets (aba coloridos)
+                            const produtos = await carregarDadosGoogleSheets('coloridos');
+                            
+                            // Limpa container antes de renderizar
+                            coloridos.innerHTML = '';
+                            
+                            // Renderiza os produtos
+                            produtos.forEach(produto => {
+                                const card = document.createElement('div');
+                                card.classList.add('item-card');
+                                
+                                let precoNum = 0;
+                                if (produto.preco !== undefined && produto.preco !== null && produto.preco !== '') {
+                                    precoNum = Number(String(produto.preco).replace(/[^\d.,-]/g, '').replace(',', '.'));
+                                    if (isNaN(precoNum) || !isFinite(precoNum)) precoNum = 0;
+                                }
+                                
+                                const temCores = produto.cores && produto.cores.length > 0;
+                                const coresAttr = temCores ? `data-cores='${JSON.stringify(produto.cores)}'` : '';
+                                
+                                card.innerHTML = `
+                                    <img src="${produto.imagem}" alt="${produto.descricao}">
+                                    <div class="titulo">${produto.descricao}</div>
+                                    <div class="codigo">${produto.codigo}</div>
+                                    <div class="card-bottom-actions">
+                                        <input type="number" min="1" value="1" class="item-qtd">
+                                        <button class="btn-add-carrinho"
+                                            data-descricao="${produto.descricao}"
+                                            data-codigo="${produto.codigo}"
+                                            data-preco="${precoNum}"
+                                            ${coresAttr}>
+                                            Adicionar
+                                        </button>
+                                    </div>
+                                `;
+                                
+                                const btn = card.querySelector('.btn-add-carrinho');
+                                btn.onclick = function() {
+                                    window._lastCuboBtnClicked = btn;
+                                    const coresData = btn.dataset.cores;
+                                    if (coresData) {
+                                        try {
+                                            const cores = JSON.parse(coresData);
+                                            mostrarPopupCores(btn, card, cores);
+                                        } catch (e) {
+                                            adicionarAoCarrinhoDirecto(card, btn);
+                                        }
+                                    } else {
+                                        adicionarAoCarrinhoDirecto(card, btn);
+                                    }
+                                    btn.classList.add('animado');
+                                    setTimeout(() => {
+                                        btn.classList.remove('animado');
+                                    }, 400);
+                                };
+                                
+                                coloridos.appendChild(card);
+                            });
+                            
                             coloridos.dataset.carregado = 'true';
                             console.log('✅ Dados carregados e renderizados');
                         } catch (err) {
