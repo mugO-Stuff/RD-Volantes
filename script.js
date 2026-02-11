@@ -1079,17 +1079,18 @@ function inicializarCatalogo() {
     const arquivoJSON = catalogoMap[filename];
 
     // Categoria Passeio: carregar padrão e coloridos
-    if (filename === 'categoria-passeio.html') {
-        const padraoId = 'catalogo-padrao';
-        const coloridosId = 'catalogo-coloridos';
+    const padraoId = 'catalogo-padrao';
+    const coloridosId = 'catalogo-coloridos';
+    const padraoElement = document.getElementById(padraoId);
+    const coloridosElement = document.getElementById(coloridosId);
+    
+    if (padraoElement && coloridosElement) {
         carregarCatalogoJSON('catalogo-passeio.json', padraoId); // carrega apenas o padrão inicialmente
 
         let coloridosCarregado = false;
 
         // Submenu toggling com lazy load
         const links = document.querySelectorAll('.catalog-submenu .subcat-link');
-        const padrao = document.getElementById(padraoId);
-        const coloridos = document.getElementById(coloridosId);
 
         links.forEach(link => {
             link.addEventListener('click', async (e) => {
@@ -1100,9 +1101,9 @@ function inicializarCatalogo() {
 
                 if (target === '#catalogo-coloridos') {
                     // Esconde padrão e mostra coloridos
-                    padrao.style.display = 'none';
-                    coloridos.style.display = 'grid';
-                    coloridos.hidden = false;
+                    padraoElement.style.display = 'none';
+                    coloridosElement.style.display = 'grid';
+                    coloridosElement.hidden = false;
                     
                     // Carrega JSON apenas na primeira vez
                     if (!coloridosCarregado) {
@@ -1111,9 +1112,9 @@ function inicializarCatalogo() {
                     }
                 } else {
                     // Esconde coloridos e mostra padrão
-                    coloridos.style.display = 'none';
-                    padrao.style.display = 'grid';
-                    padrao.hidden = false;
+                    coloridosElement.style.display = 'none';
+                    padraoElement.style.display = 'grid';
+                    padraoElement.hidden = false;
                 }
             });
         });
