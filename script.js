@@ -1121,32 +1121,30 @@ function inicializarCatalogo() {
     }
 
     // Página de cubos: carregar catálogo de cubos no container correto
-    if (filename === 'categoria-cubos.html' && document.getElementById('catalogo-cubos')) {
+    if (document.getElementById('catalogo-cubos')) {
         carregarCatalogoJSON('catalogo-cubos.json', 'catalogo-cubos');
         return;
     }
     // Página de tampas: carregar catálogo de tampas no container correto
-    if (filename === 'tampas.html' && document.getElementById('catalogo-tampas')) {
+    if (document.getElementById('catalogo-tampas')) {
         carregarCatalogoJSON('catalogo-tampas.json', 'catalogo-tampas');
         return;
     }
     // Página de outros: carregar catálogo de outros no container correto
-    if (filename === 'outros.html' && document.getElementById('catalogo-outros')) {
+    if (document.getElementById('catalogo-outros')) {
         carregarCatalogoJSON('catalogo-outros.json', 'catalogo-outros');
         return;
     }
     // Página de pesado: carregar catálogo de pesado no container correto
-    if (filename === 'psdpass.html' && document.getElementById('catalogo-pesado')) {
+    if (document.getElementById('catalogo-pesado')) {
         carregarCatalogoJSON('catalogo-pesado.json', 'catalogo-pesado');
         return;
     }
-    // Se não existir elemento com id 'catalogo-pesado', tentar com classe
-    if (filename === 'psdpass.html') {
-        const catalogoElement = document.querySelector('.catalogo');
-        if (catalogoElement) {
-            carregarCatalogoJSON('catalogo-pesado.json', catalogoElement.id || 'catalogo-container');
-            return;
-        }
+    // Verificar se existe um container com id catalogo-container (página pesado com layout diferente)
+    const catalogoContainerElement = document.getElementById('catalogo-container');
+    if (catalogoContainerElement && catalogoContainerElement.classList.contains('catalogo')) {
+        carregarCatalogoJSON('catalogo-pesado.json', 'catalogo-container');
+        return;
     }
     // Demais páginas: comportamento padrão único
     const catalogoContainer = document.querySelector('.catalogo');
