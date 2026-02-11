@@ -1088,7 +1088,7 @@ function inicializarCatalogo() {
         let coloridosCarregado = false;
 
         // Submenu toggling com lazy load
-        const links = document.querySelectorAll('.catalog-submenu .subcat-link');
+        const links = document.querySelectorAll('.subcat-link');
 
         links.forEach(link => {
             link.addEventListener('click', async (e) => {
