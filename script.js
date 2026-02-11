@@ -1177,9 +1177,12 @@ function inicializarCatalogo() {
         return;
     }
     // Se não existir elemento com id 'catalogo-pesado', tentar com classe
-    if (filename === 'psdpass.html' && document.querySelector('.catalogo')) {
-        carregarCatalogoJSON('catalogo-pesado.json', document.querySelector('.catalogo').id || 'catalogo-container');
-        return;
+    if (filename === 'psdpass.html') {
+        const catalogoElement = document.querySelector('.catalogo');
+        if (catalogoElement) {
+            carregarCatalogoJSON('catalogo-pesado.json', catalogoElement.id || 'catalogo-container');
+            return;
+        }
     }
     // Demais páginas: comportamento padrão único
     const catalogoContainer = document.querySelector('.catalogo');
