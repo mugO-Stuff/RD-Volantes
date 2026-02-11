@@ -1079,13 +1079,11 @@ function inicializarCatalogo() {
     const arquivoJSON = catalogoMap[filename];
 
     // Categoria Passeio: carregar padrão e coloridos
-    const padraoId = 'catalogo-padrao';
-    const coloridosId = 'catalogo-coloridos';
-    const padraoElement = document.getElementById(padraoId);
-    const coloridosElement = document.getElementById(coloridosId);
+    const padraoElement = document.getElementById('catalogo-padrao');
+    const coloridosElement = document.getElementById('catalogo-coloridos');
     
     if (padraoElement && coloridosElement) {
-        carregarCatalogoJSON('catalogo-passeio.json', padraoId); // carrega apenas o padrão inicialmente
+        carregarCatalogoJSON('catalogo-passeio.json', 'catalogo-padrao'); // carrega apenas o padrão inicialmente
 
         let coloridosCarregado = false;
 
@@ -1107,7 +1105,7 @@ function inicializarCatalogo() {
                     
                     // Carrega JSON apenas na primeira vez
                     if (!coloridosCarregado) {
-                        await carregarCatalogoJSON('passeio-coloridos.json', coloridosId);
+                        await carregarCatalogoJSON('passeio-coloridos.json', 'catalogo-coloridos');
                         coloridosCarregado = true;
                     }
                 } else {
