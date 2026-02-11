@@ -471,23 +471,26 @@ nav ul li a:hover:after {
    =========================== */
 .section-divider {
     position: relative;
-    width: 100vw;             /* full-bleed para cobrir laterais */
-    left: 50%;                /* centraliza o full-bleed */
+    width: 100vw;
+    left: 50%;
     transform: translateX(-50%);
     height: 370px;
     background: url('hero_img/divisao.png') center/cover no-repeat;
 }
 
+/* ===========================
+   CARD BASE
+   =========================== */
 .card {
     position: relative;
     width: 460px;
     padding: 45px;
-    background: #2b2b2b; /* card preto */
+    background: #2b2b2b;
     box-shadow: 0 10px 24px rgba(0,0,0,0.45);
     color: #ffffff;
     border-radius: 12px;
     overflow: hidden;
-    transition: transform .3s ease;
+    transition: transform .3s ease, background .3s ease;
     cursor: pointer;
     text-align: center;
     border: 1px solid rgba(255,255,255,0.08);
@@ -503,13 +506,44 @@ nav ul li a:hover:after {
     transition: opacity .3s ease;
 }
 
+/* ===========================
+   CORES PERSONALIZADAS
+   =========================== */
+
+/* LARANJA */
+.msg1 {
+    background: #F49134;
+}
+.msg1:hover {
+    background: #F8B97A;
+}
+
+/* VERDE */
+.msg2 {
+    background: #A9D84C;
+}
+.msg2:hover {
+    background: #CBEA8F;
+}
+
+/* AZUL */
+.msg3 {
+    background: #12C6D7;
+}
+.msg3:hover {
+    background: #7FE1EA;
+}
+
+/* ===========================
+   TEXTO EXTRA
+   =========================== */
 .card::after {
     content: "";
     position: absolute;
     bottom: -100%;
     left: 0;
     width: 100%;
-    background: rgba(89, 87, 87, 0.8);
+    background: rgba(0,0,0,0.55);
     color: #fff;
     padding: 15px 0;
     font-size: 16px;
@@ -528,6 +562,9 @@ nav ul li a:hover:after {
     content: "Entregamos rápido para todo o Brasil!";
 }
 
+/* ===========================
+   HOVER
+   =========================== */
 .card:hover {
     transform: scale(1.05);
 }
@@ -539,6 +576,7 @@ nav ul li a:hover:after {
 .card:hover p {
     opacity: 0;
 }
+
 
 /* ===========================
    FOOTER
