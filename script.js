@@ -790,9 +790,9 @@ async function carregarDadosGoogleSheets(nomeAba) {
             return cells;
         }
         
-        const rows = text.split('\n').map(line => parseCSVLine(line));
+        const rows = text.split(/\r?\n/).map(line => parseCSVLine(line));
         const headers = rows[0];
-        const data = rows.slice(1).map(row => {
+        const data = rows.slice(1).filter(row => row.some(cell => cell.trim())).map(row => {
             const obj = {};
             headers.forEach((header, i) => obj[header] = row[i] || '');
             return obj;
