@@ -483,7 +483,7 @@ nav ul li a:hover:after {
    =========================== */
 .card {
     position: relative;
-    width: 460px;
+    width: 360px;
     padding: 45px;
     background: #2b2b2b;
     box-shadow: 0 10px 24px rgba(0,0,0,0.45);
@@ -505,6 +505,12 @@ nav ul li a:hover:after {
     opacity: 1;
     transition: opacity .3s ease;
 }
+
+.card h3,
+.card p {
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
 
 /* ===========================
    CORES PERSONALIZADAS
