@@ -1,22 +1,72 @@
 /* ===========================
-    TOTAL DO CARRINHO
-       =========================== */
-    .carrinho-total {
-        text-align: right;
-        margin-top: 16px;
-        margin-right: 340px;
-        font-size: 18px;
-        font-weight: 600;
-        color: #000000;
-    }
+   CARROSSEL DE IMAGENS
+   =========================== */
+.carousel-section {
+    margin: 0px 0;
+    padding: 0 0 0 0;
+    background: #00000000;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    text-align: center;
+}
+.carousel-container {
+    position: relative;
+    width: 900px;
+    height: 600px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: transparent;
+}
+.carousel-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    z-index: 1;
+}
+.carousel-item.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 2;
+}
+.carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    color: #fff;
+    font-size: 1rem;
+    margin-top: 4px;
+}
 
-    /* Underline nos nomes dos itens do carrinho */
-    .carrinho-item span:first-child {
-        display: block;
-        border-bottom: 1px solid #222;
-        padding-bottom: 4px;
-        margin-bottom: 4px;
-    }
+/* ==========================
+TOTAL DO CARRINHO
+=========================== */
+.carrinho-total {
+    text-align: right;
+    margin-top: 16px;
+    margin-right: 340px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #000000;
+}
+
+/* Underline nos nomes dos itens do carrinho */
+.carrinho-item span:first-child {
+    display: block;
+    border-bottom: 1px solid #222;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+}
 
 /* ===========================
    CONFIGURAÇÃO GERAL
@@ -126,9 +176,8 @@ body.index-page .contato p {
     color: #ccc;
 }
 
-body.index-page .contato-info,
-body.index-page .contato-form {
-    background: #111;
+body.index-page .contato-info{
+    background: #11111100;
 }
 
 body.index-page footer {
@@ -702,9 +751,8 @@ footer {
     flex-direction: column;
     gap: 10px;
     padding: 40px 0;
-    max-width: 100%; /* Ocupa toda a largura */
-    width: 100%;
-    margin: 0;
+    width: 1400px;
+    margin: 0 auto;
 }
 
 .category-slide {   
@@ -713,7 +761,6 @@ footer {
     gap: 40px;
     background: #000000;
     border-radius: 0; /* Sem bordas arredondadas para ocupar tudo */
-    box-shadow: 0 8px 32px rgba(19, 45, 55, 0.453);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     min-height: 00px; /* Altura mínima dos slides */
@@ -2093,18 +2140,12 @@ body.catalog-page .catalog-wrapper {
         gap: 20px;
     }
     
-    .contato-info,
-    .contato-form {
+    .contato-info{
         padding: 20px;
     }
     
     .contato-info h3 {
         font-size: 20px;
-    }
-    
-    .contato-form input,
-    .contato-form textarea {
-        font-size: 14px;
     }
     
     /* Cubos cards mobile */
