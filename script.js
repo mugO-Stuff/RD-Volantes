@@ -840,7 +840,7 @@ async function carregarDadosGoogleSheets(nomeAba) {
                         codigo: row[keys[0]] || '',
                         descricao: row[keys[1]] || '',
                         preco: precoValor,
-                        imagem: ''
+                        imagem: row[keys[3]] || ''
                     };
                 } else if (nomeAba === 'passeio' || nomeAba === 'pesada') {
                     console.log('DEBUG cells', nomeAba, i, row);
@@ -917,8 +917,8 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
 
         container.innerHTML = '';
 
-        // Se for cubos, tampas ou outros, cria cards especiais
-        if (arquivoJSON === 'catalogo-cubos.json' || arquivoJSON === 'catalogo-tampas.json' || arquivoJSON === 'catalogo-outros.json') {
+        // Se for cubos ou outros, cria cards especiais
+        if (arquivoJSON === 'catalogo-cubos.json' || arquivoJSON === 'catalogo-outros.json') {
             let grupos = {};
             let unicoCard = false;
             let cardTitulo = '';
@@ -929,11 +929,6 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
                     if (!grupos[categoria]) grupos[categoria] = [];
                     grupos[categoria].push(produto);
                 });
-            } else if (arquivoJSON === 'catalogo-tampas.json') {
-                // Um único card para todas as tampas
-                grupos = { 'Tampas': produtos };
-                unicoCard = true;
-                cardTitulo = 'Tampas';
             } else {
                 grupos = { 'Cubos': produtos };
                 unicoCard = true;
