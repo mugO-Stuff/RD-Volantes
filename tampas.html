@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tampas</title>
+    <title>RD Volantes</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="imagem_logo/icon.png">
 </head>
+
 <body class="catalog-page">
     <header>
         <div class="container_top">
@@ -18,6 +19,7 @@
             </nav>
         </div>
     </header>
+
     <main>
         <section class="hero">
             <div class="text">
@@ -25,6 +27,24 @@
                 <p>Peça seu orçamento e fale direto com nosso time.</p>
             </div>
         </section>
+
+        <section class="cards">
+            <div class="card msg1">
+                <h3>Alta Durabilidade</h3>
+                <p>Volantes fabricados com materiais de primeira linha.</p>
+            </div>
+            
+            <div class="card msg2">
+                <h3>Modelos Variados</h3>
+                <p>Linha completa para diferentes veículos e aplicações.</p>
+            </div>
+            
+            <div class="card msg3">
+                <h3>Entrega Rápida</h3>
+                <p>Logística eficiente para todo o Brasil.</p>
+            </div>
+        </section>
+
         <div class="catalog-wrapper">
             <aside class="catalog-sidebar" aria-labelledby="categ-label">
                 <nav class="catalog-nav" aria-label="Categorias">
@@ -32,28 +52,66 @@
                         <h3>CATEGORIAS</h3>
                     </div>
                     <ul class="category-list">
-                        <li><a class="category-btn" href="psdpass.html"><span class="cat-icon" aria-hidden="true">🚚</span><span class="cat-label">Pesados</span></a></li>
-                        <li><a class="category-btn" href="categoria-passeio.html"><span class="cat-icon" aria-hidden="true">🚗</span><span class="cat-label">Passeio</span></a></li>
-                        <li><a class="category-btn" href="categoria-passeio.html#catalogo-coloridos"><span class="cat-icon" aria-hidden="true">🌐</span><span class="cat-label">Universal</span></a></li>
-                        <li><a class="category-btn" href="categoria-cubos.html"><span class="cat-icon" aria-hidden="true">⚙️</span><span class="cat-label">Cubos</span></a></li>
-                        <li><a class="category-btn" href="outros.html"><span class="cat-icon" aria-hidden="true">📦</span><span class="cat-label">Outros</span></a></li>
-                        <li><a class="category-btn active" href="tampas.html" aria-current="page"><span class="cat-icon" aria-hidden="true">🛡️</span><span class="cat-label">Tampas</span></a></li>
+                        <li>
+                            <a class="category-btn" href="psdpass.html">
+                                <span class="cat-icon" aria-hidden="true">🚚</span>
+                                <span class="cat-label">Pesados</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="category-btn" href="categoria-passeio.html">
+                                <span class="cat-icon" aria-hidden="true">🚗</span>
+                                <span class="cat-label">Passeio</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="category-btn" href="categoria-passeio.html#catalogo-coloridos">
+                                <span class="cat-icon" aria-hidden="true">🌐</span>
+                                <span class="cat-label">Universal</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="category-btn" href="categoria-cubos.html">
+                                <span class="cat-icon" aria-hidden="true">⚙️</span>
+                                <span class="cat-label">Cubos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="category-btn" href="outros.html">
+                                <span class="cat-icon" aria-hidden="true">📦</span>
+                                <span class="cat-label">Outros</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="category-btn active" href="tampas.html" aria-current="page">
+                                <span class="cat-icon" aria-hidden="true">🛡️</span>
+                                <span class="cat-label">Tampas</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </aside>
+
             <div class="catalog-main">
-                    <div class="catalogo-pesquisa" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
-                        <input id="inputPesquisaCatalogo" type="text" placeholder="Pesquisar..." style="width:320px;min-width:120px;max-width:100%;padding:11px 16px;border-radius:9px;border:1px solid #bbb;font-size:17px;background:#f3f4f6;color:#222;">
-                    </div>
-                    <div id="resultadoPesquisaCatalogo" style="margin-bottom:10px;"></div>
-                <div id="catalogo-tampas"></div>
+                <div class="catalogo-pesquisa" style="margin-bottom:12px;display:flex;gap:10px;align-items:center;justify-content:flex-end;">
+                    <input id="inputPesquisaCatalogo" type="text" placeholder="Pesquisar..." style="width:320px;min-width:120px;max-width:100%;padding:11px 16px;border-radius:9px;border:1px solid #bbb;font-size:17px;background:#f3f4f6;color:#222;">
+                </div>
+                <div id="resultadoPesquisaCatalogo" style="margin-bottom:10px;"></div>
+
+                <!-- Catálogo de tampas -->
+                <div class="catalogo" id="catalogo-tampas">
+                    <!-- produtos carregados via JavaScript -->
+                </div>
             </div>
         </div>
     </main>
+
     <a href="carrinho.html" class="carrinho-flutuante" id="icone-carrinho">🛒</a>
+
     <footer>
         © 2026 RD Volantes — Todos os direitos reservados &lt;mugO&gt;
-    </footer>
+    </footer>   
+
     <script src="script.js"></script>
 </body>
 </html>
