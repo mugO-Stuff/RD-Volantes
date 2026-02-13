@@ -132,6 +132,59 @@ function animarParaCarrinho(img) {
     }, 780);
 }
 
+// ==================================
+// MODAL DE IMAGEM (CATALOGO)
+// ==================================
+function abrirModalImagem(src, altText) {
+    if (!src) return;
+
+    const existente = document.querySelector('.image-modal-overlay');
+    if (existente) existente.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'image-modal-overlay';
+
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = altText || 'Imagem do produto';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'image-modal-close';
+    closeBtn.type = 'button';
+    closeBtn.setAttribute('aria-label', 'Fechar');
+    closeBtn.innerHTML = '&times;';
+
+    modal.appendChild(closeBtn);
+    modal.appendChild(img);
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+    const fechar = () => {
+        overlay.remove();
+        modal.remove();
+        document.removeEventListener('keydown', onKeydown);
+    };
+
+    const onKeydown = (ev) => {
+        if (ev.key === 'Escape') fechar();
+    };
+
+    overlay.addEventListener('click', fechar);
+    closeBtn.addEventListener('click', fechar);
+    document.addEventListener('keydown', onKeydown);
+}
+
+// Delegacao: abre modal ao clicar na imagem do item (catalogos)
+document.addEventListener('click', (ev) => {
+    const img = ev.target.closest('.item-card img');
+    if (!img || !img.closest('.catalogo')) return;
+    ev.preventDefault();
+    abrirModalImagem(img.currentSrc || img.src, img.alt || 'Imagem do produto');
+});
+
 // Delegação de clique para botões .btn-add-carrinho
 document.addEventListener("click", (ev) => {
     const btn = ev.target.closest(".btn-add-carrinho, .btn-add");
@@ -936,9 +989,9 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
             }
 
             // Adiciona gap entre os cards de categoria
-            container.style.display = 'flex';
-            container.style.flexDirection = 'column';
-            container.style.gap = '32px'; // Espaço entre categorias
+            // container.style.display = 'flex';
+            // container.style.flexDirection = 'column';
+            // container.style.gap = '32px'; // Espaço entre categorias
 
             Object.entries(grupos).sort(([a], [b]) => a.localeCompare(b)).forEach(([categoria, lista]) => {
                 const card = document.createElement('div');
