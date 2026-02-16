@@ -690,16 +690,6 @@ footer {
     text-align: center;
 }
 
-@media (max-width: 900px) {
-    .hero_catalogo {
-        flex-direction: column; /* empilha em telas menores */
-        text-align: center;
-    }
-    .hero_catalogo img {
-        max-width: 70vw;
-    }
-}
-
 /* BLOCO DE INFORMAÇÕES */
 .contato-info {
     text-align: center;
@@ -843,36 +833,7 @@ footer {
     background: #c03535;
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-    .category-slide,
-    .category-slide.reverse {
-        flex-direction: column;
-    }
-
-    .slide-image {
-        flex: none;
-        max-width: 100%;
-        width: 100%;
-        height: 200px;
-    }
-
-    .slide-content {
-        padding: 24px;
-        text-align: center;
-        align-items: center;
-    }
-
-    .slide-content h3 {
-        font-size: 1.5rem;
-    }
-
-    .slide-content p {
-        font-size: 1rem;
-    }
-}
-
-/* ===========================
+/* =============================
    HERO BANNER
    =========================== */
 .hero-banner {
@@ -968,19 +929,6 @@ footer {
     transform: translateY(-4px) scale(1.01);
     box-shadow: 0 14px 40px rgba(6,18,28,0.12);
     background: #d84040; /* leve escurecimento neutro */
-}
-
-/* responsividade — reduz altura e tamanhos */
-@media (max-width: 900px) {
-    .hero-banner { height: 320px; padding: 18px; }
-    .hero-banner .hero-content { padding: 18px; gap: 12px; }
-    .hero-banner .hero-buttons a { min-width: 120px; padding: 10px 14px; font-size: 14px; }
-}
-
-/* efeito sutil ao fazer hover na seção (desktop) */
-@media (hover: hover) and (pointer: fine) {
-    .hero-banner:hover::before { transform: scale(1.02) translateY(-4px); }
-    .hero-banner:hover { transform: translateY(-4px); box-shadow: 0 18px 50px rgba(14,30,37,0.16); }
 }
 
 /* ===========================
@@ -1362,17 +1310,6 @@ body.catalog-page .catalogo {
     box-shadow: 0 0 0 3px rgba(216, 64, 64, 0.1);
 }
 
-/* Responsivo */
-@media (max-width: 600px) {
-    .cliente-body {
-        grid-template-columns: 1fr;
-    }
-    
-    .cliente-orcamento {
-        padding: 15px 18px;
-    }
-}
-
 /* estilos apenas para a página do catálogo */
 body.catalog-page {
     background: #fafcfd; /* cinza bem clarinho, quase branco */
@@ -1419,23 +1356,6 @@ body.catalog-page .catalogo .item-card .titulo {
 body.catalog-page .catalogo .item-card .preco,
 body.catalog-page .catalogo .item-card .codigo {
     flex-shrink: 0;
-}
-
-/* responsividade */
-@media (max-width: 1100px) {
-    body.catalog-page .catalogo {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-@media (max-width: 820px) {
-    body.catalog-page .catalogo {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (max-width: 520px) {
-    body.catalog-page .catalogo {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* layout wrapper do catálogo com menu lateral */
@@ -1545,14 +1465,6 @@ body.catalog-page .catalog-wrapper {
     color:#fff;
     box-shadow: 0 12px 34px rgba(0,0,0,0.18);
     transform: none;
-}
-
-/* responsividade — mantém boa leitura */
-@media (max-width:900px) {
-    .catalog-sidebar { position:relative; top:auto; padding:12px; }
-    .catalog-sidebar .category-list { flex-direction:row; gap:8px; }
-    .catalog-sidebar .category-btn { padding:8px 10px; min-width:0; }
-    .catalog-sidebar .cat-icon { display:none; }
 }
 
 /* ===========================
@@ -2368,23 +2280,4 @@ body.catalog-page .catalog-wrapper {
     min-width: 0;
     flex-shrink: 0; /* não encolher */
     z-index: 1;
-}
-
-#sugestao-cubos {
-    text-align: left !important;
-}
-
-/* Animação de feedback para botões de adicionar ao carrinho */
-.btn-add-carrinho.animado,
-.spec-cart-btn.animado {
-    background: #28a745 !important;
-    color: #fff !important;
-    transition: background 0.3s, color 0.3s;
-}
-
-/* Efeito verde para todos os botões de adicionar ao carrinho */
-.btn-add-carrinho.animado {
-    background: #28a745 !important;
-    color: #fff !important;
-    transition: background 0.3s, color 0.3s;
 }
