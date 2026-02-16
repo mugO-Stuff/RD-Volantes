@@ -803,18 +803,50 @@ function parsearCores(coresString) {
 // ==================================
 // CARREGAMENTO DE DADOS DO GOOGLE SHEETS
 // ==================================
+function parseGvizResponse(texto) {
+    const inicioJson = texto.indexOf('{');
+    const fimJson = texto.lastIndexOf('}');
+    if (inicioJson === -1 || fimJson === -1) {
+        throw new Error('Resposta GViz invalida');
+    }
+    const jsonStr = texto.slice(inicioJson, fimJson + 1);
+    const payload = JSON.parse(jsonStr);
+    const cols = (payload.table?.cols || []).map((c, i) => {
+        const label = (c.label || c.id || '').toString().trim();
+        return label || `col${i}`;
+    });
+    const rows = payload.table?.rows || [];
+    return rows.map(row => {
+        const obj = {};
+        cols.forEach((col, idx) => {
+            const cell = row.c?.[idx];
+            obj[col] = cell && cell.v !== null && cell.v !== undefined ? cell.v : '';
+        });
+        return obj;
+    });
+}
+
 async function carregarDadosGoogleSheets(nomeAba) {
     let planilhaId = GOOGLE_SHEETS_ID;
     if (arguments.length > 1 && arguments[1]) {
         planilhaId = arguments[1];
     }
-    const url = `https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`;
- 
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Erro ao carregar planilha: ${nomeAba}`);
-        const data = await response.json();
-        
+        let data;
+        const gvizUrl = `https://docs.google.com/spreadsheets/d/${planilhaId}/gviz/tq?sheet=${encodeURIComponent(nomeAba)}&t=${Date.now()}`;
+        try {
+            const response = await fetch(gvizUrl, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`GViz HTTP ${response.status}`);
+            const text = await response.text();
+            data = parseGvizResponse(text);
+        } catch (gvizError) {
+            console.warn(`GViz falhou (${nomeAba}), tentando OpenSheet...`, gvizError);
+            const url = `https://opensheet.elk.sh/${planilhaId}/${encodeURIComponent(nomeAba)}`;
+            const response = await fetch(url, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`Erro ao carregar planilha: ${nomeAba}`);
+            data = await response.json();
+        }
+
         // Se for aba de lançamentos, processa diferente
         if (nomeAba.toLowerCase() === 'lancamentos') {
             const lancamentos = [];
