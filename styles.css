@@ -72,18 +72,25 @@ TOTAL DO CARRINHO
    CONFIGURAÇÃO GERAL
    =========================== */
 
+* {
+    box-sizing: border-box;
+}
+
 html, body {
     height: 100%;
     margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
     background: #dcddde; /* cinza claro para toda a página */
     color: #333;
-    padding-top: 76px;
+    overflow-x: hidden;
 }
 
 body {
     display: flex;
     flex-direction: column;
+    padding-top: 76px;
+    width: 100%;
 }
 
 /* ===========================
@@ -1734,9 +1741,8 @@ body.catalog-page .catalog-wrapper {
     transform: scale(0.98);
 }
 
-/* Responsivo para mobile */
-@media (max-width: 768px) {
-    .cubos-grid {
+/* Botão verde bonito e leve para sugestão do carrinho */
+.btn-adicionar-sugestao {
         grid-template-columns: 1fr;
         padding: 15px;
         gap: 20px;
@@ -1794,473 +1800,6 @@ body.catalog-page .catalog-wrapper {
     }
 }
 
-/* ===========================
-   RESPONSIVIDADE MOBILE COMPLETA
-   =========================== */
-
-/* Tablets e telas médias */
-@media (max-width: 992px) {
-    html, body {
-        padding-top: 60px;
-    }
-    
-    .logo img {
-        max-width: 250px;
-        margin-right: 20px;
-    }
-    
-    .hero h2 {
-        font-size: 28px !important;
-    }
-    
-    .categoria h2 {
-        font-size: 28px;
-    }
-    
-    .categoria p {
-        font-size: 22px;
-    }
-    
-    .catalog-wrapper {
-        flex-direction: column;
-    }
-    
-    .catalog-sidebar {
-        width: 100%;
-        position: relative;
-        top: 0;
-    }
-    
-    .catalog-nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .category-list {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-}
-
-/* Mobile - Smartphones */
-@media (max-width: 600px) {
-    html, body {
-        padding-top: 70px;
-    }
-    
-    /* Header mobile - CORRIGIDO */
-    header {
-        padding: 8px 10px;
-    }
-    
-    header .container_top {
-        padding: 8px 15px;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    nav.menu_top {
-        flex: 1;
-    }
-    
-    nav ul {
-        gap: 8px;
-        flex-wrap: nowrap;
-        justify-content: flex-end;
-        margin: 0;
-        padding: 0;
-    }
-    
-    nav ul li a {
-        padding: 0.4em 0.8em;
-        font-size: 12px;
-        white-space: nowrap;
-    }
-    
-    /* Logo mobile */
-    .logo img {
-        max-width: 180px;
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-    
-    /* Hero mobile */
-    .hero {
-        flex-direction: column;
-        padding: 15px;
-    }
-    
-    .hero h2 {
-        font-size: 22px !important;
-    }
-    
-    .hero p {
-        font-size: 14px;
-    }
-    
-    .text {
-        margin-left: 0;
-        margin-top: 20px;
-        padding: 15px;
-    }
-    
-    /* Hero catálogo mobile */
-    .hero_catalogo {
-        flex-direction: column;
-        padding: 20px 15px;
-        gap: 15px;
-    }
-    
-    .hero_catalogo .logo img {
-        max-width: 200px;
-    }
-    
-    .text_catalogo h2 {
-        font-size: 20px;
-    }
-    
-    .text_catalogo p {
-        font-size: 14px;
-    }
-    
-    /* Cards mobile */
-    .cards {
-        flex-direction: column;
-        gap: 15px;
-        padding: 15px;
-    }
-    
-    .card {
-        padding: 20px;
-    }
-    
-    .card h3 {
-        font-size: 18px;
-    }
-    
-    /* Category slides mobile */
-    .category-slides {
-        padding: 15px;
-        gap: 20px;
-    }
-    
-    .category-slide {
-        border-radius: 12px;
-    }
-    
-    .slide-image {
-        height: 180px;
-    }
-    
-    .slide-image img {
-        max-height: 140px;
-    }
-    
-    .slide-content {
-        padding: 20px;
-    }
-    
-    .slide-content h3 {
-        font-size: 1.3rem;
-    }
-    
-    .slide-content p {
-        font-size: 0.9rem;
-    }
-    
-    .slide-btn {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-    
-    /* Categoria título mobile */
-    .categoria {
-        margin: 20px 0;
-        padding: 0 15px;
-    }
-    
-    .categoria h2 {
-        font-size: 24px;
-    }
-    
-    .categoria p {
-        font-size: 18px;
-    }
-    
-    /* Catálogo sidebar mobile */
-    .catalog-wrapper {
-        flex-direction: column;
-        padding: 10px;
-    }
-    
-    .catalog-sidebar {
-        width: 100%;
-        position: relative;
-        top: 0;
-        margin-bottom: 15px;
-    }
-    
-    .sidebar-header h3 {
-        font-size: 14px;
-    }
-    
-    .category-list {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-    }
-    
-    .category-btn {
-        padding: 8px 12px;
-        font-size: 12px;
-    }
-    
-    .cat-icon {
-        font-size: 16px;
-    }
-    
-    /* Catálogo grid mobile - CORRIGIDO */
-    .catalog-main {
-        padding: 10px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .catalog-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 10px;
-    }
-    
-    .item-card {
-        padding: 10px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .item-card img {
-        max-height: 120px;
-        width: 100%;
-        object-fit: contain;
-    }
-    
-    .titulo {
-        font-size: 11px;
-        line-height: 1.2;
-        min-height: 26px;
-    }
-    
-    .codigo {
-        font-size: 10px;
-    }
-    
-    .preco {
-        font-size: 14px;
-    }
-    
-    .item-qtd {
-        width: 40px;
-        padding: 4px;
-        font-size: 12px;
-    }
-    
-    .btn-add {
-        padding: 6px 10px;
-        font-size: 11px;
-    }
-    
-    /* Submenu mobile */
-    .submenu-passeio {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 10px;
-        justify-content: center;
-    }
-    
-    .submenu-btn {
-        padding: 8px 12px;
-        font-size: 12px;
-    }
-    
-    /* Contato mobile */
-    .contato {
-        padding: 30px 15px;
-    }
-    
-    .contato h2 {
-        font-size: 24px;
-    }
-    
-    .contato-container {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .contato-info{
-        padding: 20px;
-    }
-    
-    .contato-info h3 {
-        font-size: 20px;
-    }
-    
-    /* Cubos cards mobile */
-    .cubos-grid {
-        grid-template-columns: 1fr;
-        padding: 10px;
-        gap: 15px;
-    }
-    
-    .cubo-card {
-        border-radius: 12px;
-    }
-    
-    .cubo-header {
-        padding: 15px;
-    }
-    
-    .cubo-header h3 {
-        font-size: 1.1rem;
-    }
-    
-    .cubo-header .marca-logo {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .cubo-specs {
-        padding: 10px;
-    }
-    
-    .spec-row {
-        padding: 10px;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .spec-code {
-        font-size: 0.85rem;
-        min-width: auto;
-        padding: 4px 8px;
-    }
-    
-    .spec-desc {
-        font-size: 0.8rem;
-        flex: 1;
-        min-width: 150px;
-    }
-    
-    .spec-cart-btn {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    
-    /* Footer mobile */
-    footer {
-        padding: 15px;
-        font-size: 12px;
-    }
-    
-    /* Carrinho flutuante mobile */
-    .carrinho-flutuante {
-        bottom: 15px;
-        right: 15px;
-        width: 50px;
-        height: 50px;
-        font-size: 22px;
-    }
-    
-    /* Hero banner mobile */
-    .hero-banner {
-        height: 280px;
-        min-height: 200px;
-        margin: 15px;
-        border-radius: 10px;
-    }
-    
-    /* Intro video mobile */
-    #intro-video {
-        width: 80vw;
-        max-width: 300px;
-    }
-    
-    /* Color popup mobile */
-    .color-popup {
-        min-width: 200px;
-        padding: 15px;
-    }
-    
-    .color-options {
-        gap: 10px;
-    }
-    
-    .color-option {
-        width: 35px;
-        height: 35px;
-    }
-}
-
-/* Muito pequeno - smartphones antigos */
-@media (max-width: 380px) {
-    nav ul li a {
-        padding: 0.3em 0.6em;
-        font-size: 11px;
-    }
-    
-    .logo img {
-        max-width: 150px;
-    }
-    
-    .hero h2 {
-        font-size: 18px !important;
-    }
-    
-    .categoria h2 {
-        font-size: 20px;
-    }
-    
-    .slide-content h3 {
-        font-size: 1.1rem;
-    }
-    
-    .cubo-header h3 {
-        font-size: 1rem;
-    }
-    
-    /* Catálogo ainda menor */
-    .catalog-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px;
-    }
-    
-    .item-card {
-        padding: 8px;
-    }
-    
-    .item-card img {
-        max-height: 100px;
-    }
-    
-    .titulo {
-        font-size: 10px;
-    }
-    
-    .preco {
-        font-size: 12px;
-    }
-    
-    .btn-add {
-        padding: 5px 8px;
-        font-size: 10px;
-    }
-}
-
 /* Botão verde bonito e leve para sugestão do carrinho */
 .btn-adicionar-sugestao {
     background: #286d3c;
@@ -2275,9 +1814,10 @@ body.catalog-page .catalog-wrapper {
     transition: background 0.2s, transform 0.15s;
     outline: none;
     margin: 0 10px 8px 0;
-    display: inline-block; /* importante: não block, para não ocupar toda a linha */
+    display: inline-block;
     text-align: left;
     min-width: 0;
-    flex-shrink: 0; /* não encolher */
+    flex-shrink: 0;
     z-index: 1;
 }
+    
