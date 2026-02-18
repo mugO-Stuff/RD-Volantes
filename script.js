@@ -61,9 +61,13 @@ function carregarProdutos() {
 // ==================================
 // ANIMAÇÃO DO HEADER AO ROLAR
 // ==================================
-window.addEventListener('scroll', () => {
+window.addEventListener('scroll', function() {
     const header = document.querySelector('header');
-    if (window.scrollY > 50) {
+    if (!header) return;
+    
+    const scrollY = window.scrollY;
+    
+    if (scrollY > 10) {
         header.classList.add('scrolled');
     } else {
         header.classList.remove('scrolled');
@@ -1112,26 +1116,7 @@ async function carregarCatalogoJSON(arquivoJSON, containerId) {
                         </button>
                     </div>
                 `;
-                // Adiciona evento de clique igual cubos
-                const btn = card.querySelector('.btn-add-carrinho');
-                btn.onclick = function() {
-                    window._lastCuboBtnClicked = btn;
-                    const coresData = btn.dataset.cores;
-                    if (coresData) {
-                        try {
-                            const cores = JSON.parse(coresData);
-                            mostrarPopupCores(btn, card, cores);
-                        } catch (e) {
-                            adicionarAoCarrinhoDirecto(card, btn);
-                        }
-                    } else {
-                        adicionarAoCarrinhoDirecto(card, btn);
-                    }
-                    btn.classList.add('animado');
-                    setTimeout(() => {
-                        btn.classList.remove('animado');
-                    }, 400);
-                };
+                // O event listener global já cuida dos cliques
                 container.appendChild(card);
             });
         }
@@ -1492,26 +1477,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     </div>
                                 `;
                                 
-                                const btn = card.querySelector('.btn-add-carrinho');
-                                btn.onclick = function() {
-                                    window._lastCuboBtnClicked = btn;
-                                    const coresData = btn.dataset.cores;
-                                    if (coresData) {
-                                        try {
-                                            const cores = JSON.parse(coresData);
-                                            mostrarPopupCores(btn, card, cores);
-                                        } catch (e) {
-                                            adicionarAoCarrinhoDirecto(card, btn);
-                                        }
-                                    } else {
-                                        adicionarAoCarrinhoDirecto(card, btn);
-                                    }
-                                    btn.classList.add('animado');
-                                    setTimeout(() => {
-                                        btn.classList.remove('animado');
-                                    }, 400);
-                                };
-                                
+                                // O event listener global já cuida dos cliques
                                 coloridos.appendChild(card);
                             });
                             

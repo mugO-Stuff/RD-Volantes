@@ -37,9 +37,15 @@
         left: 0;
         right: 0;
         z-index: 1000;
-        background: #fff;
+        background: #4c4b4b;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         padding: 10px 0;
+        transition: all 0.35s ease;
+    }
+    
+    /* Header scrolled no mobile também */
+    header.scrolled {
+        padding: 5px 0 !important;
     }
     
     header .container_top {

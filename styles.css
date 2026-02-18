@@ -287,10 +287,9 @@ body.index-page footer {
 
 /* HEADER NORMAL */
 header {
-    background: #4c4b4b url('imagem_logo/logo.png') calc(100% - 30px) center no-repeat;
-    background-size: contain;
+    background: #4c4b4b;
     color: white;
-    padding: 10px 10px;          /* altura normal */
+    padding: 15px 10px;
     display: flex;
     align-items: center;
     position: fixed;
@@ -298,8 +297,13 @@ header {
     left: 0;
     width: 100%;
     z-index: 9999;
-    transition: all 0.35s ease;   /* animação suave */
-    backdrop-filter: blur(0px);
+    transition: all 0.35s ease;
+}
+
+/* Logo apenas na página index */
+body.index-page header {
+    background: #4c4b4b url('imagem_logo/logo.png') calc(100% - 30px) center no-repeat;
+    background-size: contain;
 }
 
 /* HEADER ENCOLHIDO */
@@ -312,20 +316,19 @@ header.shrink {
 
 /* HEADER ENCOLHIDO AO ROLAR */
 header.scrolled {
-    padding: 4px 10px;           /* 🔥 deixa mais fino */
-    background: rgba(0, 0, 0, 0.274);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.25);    
+    padding: 2px 10px !important;
+    min-height: 40px !important;
 }
 
 /* Quando o header encolher, o conteúdo interno também encolhe */
 header.scrolled .container_top {
-    padding: 2px 20px !important;   /* diminui muito */
+    padding: 2px 20px !important;
+    min-height: 35px !important;
 }
 
 header .container_top {
-    padding: 25px 20px;             /* altura normal */
-    transition: padding 0.35s ease; /* animação suave */
+    padding: 15px 20px;
+    transition: padding 0.35s ease;
 }
 
 .container_top {
