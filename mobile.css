@@ -604,7 +604,8 @@
     }
     
     .btn-gerar-pdf,
-    .btn-whats-carrinho {
+    .btn-whats-carrinho,
+    .btn-salvar-orcamento {
         width: 100%;
         max-width: 100%;
         margin: 10px 0;

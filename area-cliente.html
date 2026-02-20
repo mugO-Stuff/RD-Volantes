@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta — RD Volantes</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=202602191">
+    <link rel="stylesheet" href="mobile.css?v=202602191">
+    <link rel="icon" type="image/png" href="imagem_logo/icon.png">
+    
+    <style>
+        .area-cliente-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .perfil-card {
+            background: linear-gradient(135deg, #d84040, #ff6b6b);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .perfil-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .perfil-info h2 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        .perfil-info p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+        
+        .btn-editar-perfil {
+            background: white;
+            color: #d84040;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn-editar-perfil:hover {
+            transform: translateY(-2px);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: #d84040;
+        }
+        
+        .tab.active {
+            color: #d84040;
+            border-bottom-color: #d84040;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .orcamentos-lista {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .orcamento-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .orcamento-card:hover {
+            border-color: #d84040;
+            box-shadow: 0 4px 12px rgba(216, 64, 64, 0.1);
+        }
+        
+        .orcamento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .orcamento-id {
+            font-size: 12px;
+            color: #888;
+            font-family: monospace;
+        }
+        
+        .orcamento-data {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .orcamento-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-pendente {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-aprovado {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-enviado {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .orcamento-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .orcamento-itens {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .orcamento-itens h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .item-lista {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .item-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 60px;
+            gap: 10px;
+            padding: 8px;
+            background: #f8f8f8;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        
+        .item-codigo {
+            font-family: monospace;
+            font-weight: 600;
+            color: #d84040;
+        }
+        
+        .item-descricao {
+            color: #333;
+        }
+        
+        .item-qtd {
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .orcamento-acoes {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-acao {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-ver-detalhes {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-ver-detalhes:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-repetir {
+            background: #d84040;
+            color: white;
+        }
+        
+        .btn-repetir:hover {
+            background: #c03030;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+        
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #d84040, #ff6b6b);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .form-editar {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Exo 2', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #d84040;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Exo 2', sans-serif;
+            box-sizing: border-box;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .campos-pf {
+            display: none;
+        }
+        
+        .campos-pj {
+            display: none;
+        }
+        
+        .secao-titulo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #d84040;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .perfil-preenchimento {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .preenchimento-label {
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .preenchimento-barra {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .preenchimento-progresso {
+            height: 100%;
+            background: linear-gradient(90deg, #20c997, #00d084);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .checkbox-entrega {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .checkbox-entrega:hover {
+            background: #f0f0f0;
+            border-color: #d84040;
+        }
+        
+        .checkbox-entrega input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #d84040;
+        }
+        
+        .checkbox-entrega label {
+            flex: 1;
+            cursor: pointer;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .form-acoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn-salvar {
+            flex: 1;
+            padding: 14px;
+            background: linear-gradient(135deg, #d84040, #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-cancelar {
+            padding: 14px 24px;
+            background: #f0f0f0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        
+        @media (max-width: 768px) {
+            .orcamento-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .item-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+            
+            .item-qtd {
+                text-align: left;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container_top">
+        <nav class="menu_top">
+            <ul>
+                <li><a href="index.html">Principal</a></li>
+                <li><a href="index.html#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="text">
+            <h2 style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 8h-3V6c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm11 14H4v-3h16v3zm0-5H4v-5h16v5z"/>
+                    <circle cx="12" cy="8" r="2" fill="#4A9FFF"/>
+                </svg>
+                Minha Conta
+            </h2>
+            <p>Gerencie seus dados e veja seu histórico de orçamentos.</p>
+        </div>
+    </section>
+    
+    <div class="area-cliente-container">
+        <!-- Perfil do Cliente -->
+        <div class="perfil-card">
+            <div class="perfil-header">
+                <div class="perfil-info">
+                    <h2 id="perfil-nome">Carregando...</h2>
+                    <p id="perfil-email">📧 ...</p>
+                    <p id="perfil-telefone" style="display: none;">📱 ...</p>
+                    <p id="perfil-cnpj" style="display: none;">🏢 ...</p>
+                </div>
+                <button class="btn-editar-perfil" id="btn-editar">
+                    ✏️ Editar Perfil
+                </button>
+            </div>
+            <div class="perfil-preenchimento">
+                <div class="preenchimento-label">
+                    <span>Preenchimento do Perfil</span>
+                    <span id="perfil-porcentagem">0%</span>
+                </div>
+                <div class="preenchimento-barra">
+                    <div class="preenchimento-progresso" id="perfil-barra"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="orcamentos">
+                📋 Meus Orçamentos
+            </button>
+            <button class="tab" data-tab="perfil">
+                👤 Meus Dados
+            </button>
+        </div>
+        
+        <!-- Tab: Orçamentos -->
+        <div class="tab-content active" id="tab-orcamentos">
+            <div id="orcamentos-loading" class="loading">
+                Carregando orçamentos...
+            </div>
+            
+            <div id="orcamentos-container" style="display: none;">
+                <div class="orcamentos-lista" id="orcamentos-lista">
+                    <!-- Orçamentos serão inseridos aqui -->
+                </div>
+            </div>
+            
+            <div id="orcamentos-empty" style="display: none;">
+                <div class="empty-state">
+                    <svg fill="#ccc" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+                        <path d="M7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/>
+                    </svg>
+                    <h3>Nenhum orçamento ainda</h3>
+                    <p>Você ainda não fez nenhum orçamento.</p>
+                    <a href="index.html" class="btn-primary">Fazer Meu Primeiro Orçamento</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Perfil -->
+        <div class="tab-content" id="tab-perfil">
+            <div class="form-editar">
+                <h3 style="margin-bottom: 20px;">Editar Meus Dados</h3>
+                
+                <form id="form-perfil">
+                    <!-- DADOS CADASTRAIS -->
+                    <div class="form-group">
+                        <label for="editar-email">E-mail *</label>
+                        <input 
+                            type="email" 
+                            id="editar-email" 
+                            disabled
+                            style="background: #f5f5f5; cursor: not-allowed;">
+                        <small style="color: #888; font-size: 12px; display: block; margin-top: 5px;">
+                            O e-mail não pode ser alterado
+                        </small>
+                    </div>
+                    
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label for="editar-nome">Razão Social *</label>
+                            <input 
+                                type="text" 
+                                id="editar-nome" 
+                                placeholder="Razão social da empresa"
+                                required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-fantasia">Fantasia</label>
+                            <input 
+                                type="text" 
+                                id="editar-fantasia" 
+                                placeholder="Nome fantasia">
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editar-tipo-pessoa">Tipo de Pessoa *</label>
+                        <select id="editar-tipo-pessoa" required>
+                            <option value="">Selecione...</option>
+                            <option value="fisica">Pessoa Física</option>
+                            <option value="juridica">Pessoa Jurídica</option>
+                        </select>
+                    </div>
+                    
+                    <!-- CAMPOS PESSOA FÍSICA -->
+                    <div class="campos-pf" id="campos-pf">
+                        <div class="form-row-3">
+                            <div class="form-group">
+                                <label for="editar-cpf">CPF</label>
+                                <input 
+                                    type="text" 
+                                    id="editar-cpf" 
+                                    placeholder="000.000.000-00"
+                                    maxlength="14">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editar-rg">RG</label>
+                                <input 
+                                    type="text" 
+                                    id="editar-rg" 
+                                    placeholder="00.000.000-0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editar-orgao-emissor">Órgão Emissor</label>
+                                <input 
+                                    type="text" 
+                                    id="editar-orgao-emissor" 
+                                    placeholder="SSP/SP">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CAMPOS PESSOA JURÍDICA -->
+                    <div class="campos-pj" id="campos-pj">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="editar-cnpj">CNPJ</label>
+                                <input 
+                                    type="text" 
+                                    id="editar-cnpj" 
+                                    placeholder="00.000.000/0000-00"
+                                    maxlength="18">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editar-regime-tributario">Código de regime tributário</label>
+                                <select id="editar-regime-tributario">
+                                    <option value="">Não definido</option>
+                                    <option value="1">1 - Contribuinte ICMS</option>
+                                    <option value="2">2 - Contribuinte Isento</option>
+                                    <option value="3">3 - Não Contribuinte</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row-3">
+                            <div class="form-group">
+                                <label for="editar-inscricao-estadual">Inscrição Estadual</label>
+                                <input 
+                                    type="text" 
+                                    id="editar-inscricao-estadual" 
+                                    placeholder="000.000.000.000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editar-inscricao-municipal">Inscrição Municipal</label>
+                                <input 
+                                    type="text" 
+                                    id="editar-inscricao-municipal" 
+                                    placeholder="00000000">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="editar-ie-isento">IE Isento</label>
+                                <select id="editar-ie-isento">
+                                    <option value="nao">Não</option>
+                                    <option value="sim">Sim</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- CAMPOS COMUNS -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-cliente-desde">Cliente desde</label>
+                            <input 
+                                type="date" 
+                                id="editar-cliente-desde">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-contribuinte">Contribuinte</label>
+                            <select id="editar-contribuinte">
+                                <option value="">Selecione...</option>
+                                <option value="1">1 - Contribuinte ICMS</option>
+                                <option value="2">2 - Contribuinte Isento</option>
+                                <option value="9">9 - Não contribuinte</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group campos-pf" id="campos-pf-inscricao">
+                        <label for="editar-inscricao-estadual-pf">Inscrição Estadual</label>
+                        <input 
+                            type="text" 
+                            id="editar-inscricao-estadual-pf" 
+                            placeholder="000.000.000.000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editar-telefone">Telefone</label>
+                        <input 
+                            type="tel" 
+                            id="editar-telefone" 
+                            placeholder="(99) 99999-9999"
+                            maxlength="15">
+                    </div>
+                    
+                    <!-- ENDEREÇO -->
+                    <h4 class="secao-titulo">Endereço</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-cep">CEP</label>
+                            <input 
+                                type="text" 
+                                id="editar-cep" 
+                                placeholder="00000-000"
+                                maxlength="9">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-uf">UF</label>
+                            <select id="editar-uf">
+                                <option value="">UF...</option>
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
+                                <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SP">SP</option>
+                                <option value="SE">SE</option>
+                                <option value="TO">TO</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-cidade">Cidade</label>
+                            <input 
+                                type="text" 
+                                id="editar-cidade" 
+                                placeholder="Nome da cidade">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-bairro">Bairro</label>
+                            <input 
+                                type="text" 
+                                id="editar-bairro" 
+                                placeholder="Nome do bairro">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row-3">
+                        <div class="form-group" style="grid-column: 1 / 3;">
+                            <label for="editar-endereco">Endereço</label>
+                            <input 
+                                type="text" 
+                                id="editar-endereco" 
+                                placeholder="Rua, Avenida...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-numero">Número</label>
+                            <input 
+                                type="text" 
+                                id="editar-numero" 
+                                placeholder="Nº">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editar-complemento">Complemento</label>
+                        <input 
+                            type="text" 
+                            id="editar-complemento" 
+                            placeholder="Complemento (opcional)">
+                    </div>
+                    
+                    <!-- ENTREGA DIRETA -->
+                    <div class="checkbox-entrega">
+                        <input 
+                            type="checkbox" 
+                            id="editar-entrega-direta">
+                        <label for="editar-entrega-direta">Entrega Direta (sem transportadora)</label>
+                    </div>
+                    
+                    <!-- ENDEREÇO DA TRANSPORTADORA -->
+                    <div id="secao-transportadora">
+                        <h4 class="secao-titulo">Endereço da Transportadora</h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-transp-cep">CEP</label>
+                            <input 
+                                type="text" 
+                                id="editar-transp-cep" 
+                                placeholder="00000-000"
+                                maxlength="9">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-transp-uf">UF</label>
+                            <select id="editar-transp-uf">
+                                <option value="">UF...</option>
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
+                                <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SP">SP</option>
+                                <option value="SE">SE</option>
+                                <option value="TO">TO</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editar-transp-cidade">Cidade</label>
+                            <input 
+                                type="text" 
+                                id="editar-transp-cidade" 
+                                placeholder="Nome da cidade">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-transp-bairro">Bairro</label>
+                            <input 
+                                type="text" 
+                                id="editar-transp-bairro" 
+                                placeholder="Nome do bairro">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row-3">
+                        <div class="form-group" style="grid-column: 1 / 3;">
+                            <label for="editar-transp-endereco">Endereço</label>
+                            <input 
+                                type="text" 
+                                id="editar-transp-endereco" 
+                                placeholder="Rua, Avenida...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editar-transp-numero">Número</label>
+                            <input 
+                                type="text" 
+                                id="editar-transp-numero" 
+                                placeholder="Nº">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editar-transp-complemento">Complemento</label>
+                        <input 
+                            type="text" 
+                            id="editar-transp-complemento" 
+                            placeholder="Complemento (opcional)">
+                    </div>
+                    </div>
+                    
+                    <div class="form-acoes">
+                        <button type="submit" class="btn-salvar">
+                            Salvar Alterações
+                        </button>
+                    </div>
+                </form>
+
+                <!-- SEÇÃO DE TROCAR SENHA -->
+                <div style="margin-top: 40px; padding-top: 40px; border-top: 2px solid #e0e0e0;">
+                    <h3 style="margin-bottom: 20px;">Trocar Senha</h3>
+                    
+                    <form id="form-trocar-senha">
+                        <div class="form-group">
+                            <label for="senha-atual">Senha Atual *</label>
+                            <div style="position: relative;">
+                                <input 
+                                    type="password" 
+                                    id="senha-atual" 
+                                    placeholder="Digite sua senha atual"
+                                    required>
+                                <button type="button" class="btn-toggle-senha" onclick="toggleMostrarSenha('senha-atual')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px;">👁️</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nova-senha">Nova Senha *</label>
+                            <div style="position: relative;">
+                                <input 
+                                    type="password" 
+                                    id="nova-senha" 
+                                    placeholder="Digite sua nova senha"
+                                    required
+                                    minlength="6">
+                                <button type="button" class="btn-toggle-senha" onclick="toggleMostrarSenha('nova-senha')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px;">👁️</button>
+                            </div>
+                            <small style="color: #d84040; font-weight: 600;">Obrigatório: letras e números (mínimo 6 caracteres)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirmar-senha">Confirmar Nova Senha *</label>
+                            <div style="position: relative;">
+                                <input 
+                                    type="password" 
+                                    id="confirmar-senha" 
+                                    placeholder="Confirme sua nova senha"
+                                    required
+                                    minlength="6">
+                                <button type="button" class="btn-toggle-senha" onclick="toggleMostrarSenha('confirmar-senha')" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 20px; padding: 5px;">👁️</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-acoes">
+                            <button type="submit" class="btn-salvar">
+                                Alterar Senha
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    © 2025 RD Volantes — Todos os direitos reservados
+</footer>
+
+<script src="auth.js"></script>
+<script src="area-cliente.js"></script>
+
+</body>
+</html>

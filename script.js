@@ -241,7 +241,7 @@ function adicionarAoCarrinhoDirecto(card, btn, codigoOverride = null, corNome = 
     if (existente) {
         existente.qtd = (Number(existente.qtd) || 0) + qtd;
     } else {
-        const item = { codigo, descricao, preco, qtd };
+        const item = { codigo, descricao, valor: preco, qtd };
         console.log('DEBUG item salvo:', item);
         carrinho.push(item);
     }
@@ -609,20 +609,44 @@ function setupPdfButton() {
     if (!btnPdf) return;
     
     btnPdf.addEventListener("click", async () => {
-        const clienteNome = (document.getElementById("clienteNome")?.value || "").trim();
-        const clienteCNPJ = (document.getElementById("clienteCNPJ")?.value || "").trim();
-        const clienteEmail = (document.getElementById("clienteEmail")?.value || "").trim();
-        const clienteTelefone = (document.getElementById("clienteTelefone")?.value || "").trim();
-        const clienteObs = (document.getElementById("clienteObs")?.value || "").trim();
-
-        if (!window.jspdf?.jsPDF) {
-            alert("jsPDF não disponível.");
-            return;
-        }
-
         const carrinho = safeGetCarrinho();
         if (!carrinho.length) {
             alert("Carrinho vazio — adicione itens antes de gerar o PDF.");
+            return;
+        }
+        
+        // Verificar se está logado
+        let clienteNome = "";
+        let clienteCNPJ = "";
+        let clienteEmail = "";
+        let clienteTelefone = "";
+        let clienteObs = "";
+        
+        const usuarioLogadoData = usuarioLogado();
+        
+        if (usuarioLogadoData) {
+            // Cliente logado: usar dados do perfil
+            clienteNome = usuarioLogadoData.nome || "";
+            clienteCNPJ = usuarioLogadoData.cnpj || "";
+            clienteEmail = usuarioLogadoData.email || "";
+            clienteTelefone = usuarioLogadoData.telefone || "";
+            clienteObs = "";
+        } else {
+            // Cliente não logado: exigir preenchimento
+            clienteNome = (document.getElementById("clienteNome")?.value || "").trim();
+            clienteCNPJ = (document.getElementById("clienteCNPJ")?.value || "").trim();
+            clienteEmail = (document.getElementById("clienteEmail")?.value || "").trim();
+            clienteTelefone = (document.getElementById("clienteTelefone")?.value || "").trim();
+            clienteObs = (document.getElementById("clienteObs")?.value || "").trim();
+            
+            if (!clienteNome || !clienteCNPJ) {
+                alert("Por favor, preencha Nome e CNPJ antes de gerar o PDF.");
+                return;
+            }
+        }
+
+        if (!window.jspdf?.jsPDF) {
+            alert("jsPDF não disponível.");
             return;
         }
 
@@ -706,6 +730,21 @@ function setupPdfButton() {
         const ano = String(hoje.getFullYear()).slice(-2);
         const nomeArquivo = `Orçamento-${dia}-${mes}-${ano}.pdf`;
         doc.save(nomeArquivo);
+
+        // Salvar orçamento no histórico (se usuário estiver logado)
+        if (typeof salvarOrcamento === 'function') {
+            salvarOrcamento(carrinho, clienteObs).then(resultado => {
+                if (resultado.sucesso) {
+                    console.log('✅ Orçamento salvo no histórico');
+                    // Mostrar mensagem visual
+                    mostrarMensagemSucesso('✅ PDF gerado e orçamento salvo com sucesso!');
+                }
+            }).catch(erro => {
+                console.warn('Erro ao salvar orçamento no histórico:', erro);
+            });
+        } else {
+            mostrarMensagemSucesso('✅ PDF gerado com sucesso!');
+        }
     });
 }
 
@@ -1318,11 +1357,36 @@ document.addEventListener("DOMContentLoaded", () => {
                         alert('Carrinho vazio!');
                         return;
                     }
-                    // Dados do cliente
-                    const clienteNome = (document.getElementById('clienteNome')?.value || '').trim();
-                    const clienteCNPJ = (document.getElementById('clienteCNPJ')?.value || '').trim();
-                    const clienteEmail = (document.getElementById('clienteEmail')?.value || '').trim();
-                    const clienteTelefone = (document.getElementById('clienteTelefone')?.value || '').trim();
+                    
+                    // Verificar se está logado
+                    let clienteNome = "";
+                    let clienteCNPJ = "";
+                    let clienteEmail = "";
+                    let clienteTelefone = "";
+                    let clienteObs = "";
+                    
+                    const usuarioLogadoData = usuarioLogado();
+                    
+                    if (usuarioLogadoData) {
+                        // Cliente logado: usar dados do perfil
+                        clienteNome = usuarioLogadoData.nome || "";
+                        clienteCNPJ = usuarioLogadoData.cnpj || "";
+                        clienteEmail = usuarioLogadoData.email || "";
+                        clienteTelefone = usuarioLogadoData.telefone || "";
+                        clienteObs = "";
+                    } else {
+                        // Cliente não logado: exigir preenchimento
+                        clienteNome = (document.getElementById('clienteNome')?.value || '').trim();
+                        clienteCNPJ = (document.getElementById('clienteCNPJ')?.value || '').trim();
+                        clienteEmail = (document.getElementById('clienteEmail')?.value || '').trim();
+                        clienteTelefone = (document.getElementById('clienteTelefone')?.value || '').trim();
+                        clienteObs = (document.getElementById('clienteObs')?.value || '').trim();
+                        
+                        if (!clienteNome || !clienteCNPJ) {
+                            alert('Por favor, preencha Nome e CNPJ antes de exportar.');
+                            return;
+                        }
+                    }
 
                     // Títulos
                     const tituloCliente = 'DADOS DO CLIENTE';
@@ -1341,9 +1405,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     csv += tituloCliente + '\n';
                     csv += 'Nome;' + '"' + clienteNome.replace(/"/g, '""') + '"' + '\n';
                     csv += 'CNPJ;' + '"' + clienteCNPJ.replace(/"/g, '""') + '"' + '\n';
-                    csv += 'E-mail;' + '"' + clienteEmail.replace(/"/g, '""') + '"' + '\n';
-                    csv += 'Telefone;' + '"' + clienteTelefone.replace(/"/g, '""') + '"' + '\n';
-                    csv += 'Observação;' + '"' + (document.getElementById('clienteObs')?.value || '').replace(/"/g, '""') + '"' + '\n';
+                    if (clienteEmail) csv += 'E-mail;' + '"' + clienteEmail.replace(/"/g, '""') + '"' + '\n';
+                    if (clienteTelefone) csv += 'Telefone;' + '"' + clienteTelefone.replace(/"/g, '""') + '"' + '\n';
+                    if (clienteObs) csv += 'Observação;' + '"' + clienteObs.replace(/"/g, '""') + '"' + '\n';
                     csv += '\n\n\n'; // Três linhas em branco
                     csv += tituloProdutos + '\n';
                     csv += header.join(';') + '\n';
@@ -1362,6 +1426,20 @@ document.addEventListener("DOMContentLoaded", () => {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+                    
+                    // Salvar orçamento no histórico (se usuário estiver logado)
+                    if (typeof salvarOrcamento === 'function') {
+                        salvarOrcamento(carrinho, clienteObs).then(resultado => {
+                            if (resultado.sucesso) {
+                                console.log('✅ Orçamento salvo no histórico');
+                                mostrarMensagemSucesso('✅ CSV exportado e orçamento salvo com sucesso!');
+                            }
+                        }).catch(erro => {
+                            console.warn('Erro ao salvar orçamento no histórico:', erro);
+                        });
+                    } else {
+                        mostrarMensagemSucesso('✅ CSV exportado com sucesso!');
+                    }
                 });
             }
         // Se acessar a página já com #catalogo-coloridos, abrir direto a aba Variados
@@ -1375,7 +1453,53 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     setupIntroVideo();
     setupPdfButton();
+    setupBotaoSalvarOrcamento();
     inicializarCatalogo(); // Carrega o catálogo via JSON
+    
+    // ==================================
+    // MOSTRAR/OCULTAR SEÇÃO DE DADOS DO CLIENTE
+    // ==================================
+    function toggleSecaoDadosCliente() {
+        const secaoDados = document.getElementById('secao-dados-cliente');
+        if (!secaoDados) return;
+        
+        const usuarioLogadoData = usuarioLogado();
+        
+        if (usuarioLogadoData) {
+            // Cliente logado: ocultar seção de dados
+            secaoDados.style.display = 'none';
+            
+            // Preencher campos com dados do cliente logado (para referência, mesmo que ocultos)
+            if (document.getElementById('clienteNome')) {
+                document.getElementById('clienteNome').value = usuarioLogadoData.nome || '';
+            }
+            if (document.getElementById('clienteCNPJ')) {
+                document.getElementById('clienteCNPJ').value = usuarioLogadoData.cnpj || '';
+            }
+            if (document.getElementById('clienteEmail')) {
+                document.getElementById('clienteEmail').value = usuarioLogadoData.email || '';
+            }
+            if (document.getElementById('clienteTelefone')) {
+                document.getElementById('clienteTelefone').value = usuarioLogadoData.telefone || '';
+            }
+        } else {
+            // Cliente não logado: mostrar seção de dados
+            secaoDados.style.display = 'block';
+        }
+    }
+    
+    // Executar ao carregar
+    toggleSecaoDadosCliente();
+    
+    // Monitorar mudanças de login (quando o usuário fizer login/logout)
+    const checkLoginInterval = setInterval(() => {
+        toggleSecaoDadosCliente();
+    }, 1000);
+    
+    // Limpar interval quando sair da página
+    window.addEventListener('beforeunload', () => {
+        clearInterval(checkLoginInterval);
+    });
 
     // Passeio sempre mostra o catálogo padrão e deixa "Passeio" ativo - Handler movido para baixo (após linha 1359)
     if (window.location.pathname.includes('categoria-passeio.html')) {
@@ -1565,11 +1689,118 @@ function adicionarCuboAoCarrinho(codigo, descricao, preco = 0) {
             existente.preco = preco;
         }
     } else {
-        carrinho.push({ codigo, descricao, preco, qtd: 1 });
+        carrinho.push({ codigo, descricao, valor: preco, qtd: 1 });
     }
     if (!safeSaveCarrinho(carrinho)) {
         alert("Erro ao salvar item no carrinho.");
         return;
     }
     mostrarToast(`${codigo} adicionado ao carrinho!`);
+}
+
+// ==================================
+// MOSTRAR MENSAGEM DE SUCESSO
+// ==================================
+function mostrarMensagemSucesso(mensagem) {
+    // Criar elemento de notificação
+    const notificacao = document.createElement('div');
+    notificacao.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 10000;
+        font-weight: 600;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notificacao.textContent = mensagem;
+    
+    // Adicionar animação CSS
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notificacao);
+    
+    // Remover após 4 segundos
+    setTimeout(() => {
+        notificacao.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+            notificacao.remove();
+        }, 300);
+    }, 4000);
+}
+
+// ==================================
+// BOTÃO SALVAR ORÇAMENTO (SEM GERAR PDF/CSV)
+// ==================================
+function setupBotaoSalvarOrcamento() {
+    const btnSalvar = document.getElementById('btn-salvar-orcamento');
+    if (!btnSalvar) return;
+    
+    btnSalvar.addEventListener('click', async () => {
+        const carrinho = safeGetCarrinho();
+        
+        if (!carrinho.length) {
+            alert('Carrinho vazio! Adicione itens antes de salvar.');
+            return;
+        }
+        
+        // Verificar se está logado
+        if (typeof usuarioLogado !== 'function' || !usuarioLogado()) {
+            if (confirm('Você precisa estar logado para salvar orçamentos.\n\nDeseja fazer login agora?')) {
+                window.location.href = 'login.html';
+            }
+            return;
+        }
+        
+        const clienteObs = (document.getElementById('clienteObs')?.value || '').trim();
+        
+        // Desabilitar botão temporariamente
+        btnSalvar.disabled = true;
+        btnSalvar.style.opacity = '0.6';
+        btnSalvar.textContent = '💾 Salvando...';
+        
+        try {
+            if (typeof salvarOrcamento === 'function') {
+                const resultado = await salvarOrcamento(carrinho, clienteObs);
+                
+                if (resultado.sucesso) {
+                    mostrarMensagemSucesso('✅ Orçamento salvo com sucesso!');
+                    
+                    // Opcional: redirecionar para área do cliente após 2 segundos
+                    setTimeout(() => {
+                        if (confirm('Orçamento salvo!\n\nDeseja ver seu histórico na área do cliente?')) {
+                            window.location.href = 'area-cliente.html';
+                        }
+                    }, 2000);
+                } else {
+                    alert('Erro ao salvar orçamento: ' + resultado.mensagem);
+                }
+            } else {
+                alert('Sistema de salvamento não disponível. Verifique se está logado.');
+            }
+        } catch (erro) {
+            console.error('Erro ao salvar orçamento:', erro);
+            alert('Erro ao salvar orçamento. Tente novamente.');
+        } finally {
+            // Reabilitar botão
+            btnSalvar.disabled = false;
+            btnSalvar.style.opacity = '1';
+            btnSalvar.textContent = '💾 Salvar Orçamento';
+        }
+    });
 }
